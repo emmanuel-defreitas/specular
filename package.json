@@ -1,0 +1,62 @@
+{
+  "name": "@exegia/bezel",
+  "version": "0.0.0",
+  "description": "Surface lighting for Tailwind v4 + React: two-layer inset bezels as utilities, a tailwind-merge config that keeps them alive in cn(), and pointer-lit rims.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "import": "./dist/plugin.js"
+    },
+    "./merge": {
+      "types": "./dist/merge.d.ts",
+      "import": "./dist/merge.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "tsc --noEmit",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "smoke": "node --test src/plugin.smoke.test.ts"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "tailwind-merge": "^3",
+    "tailwindcss": "^4.1 <5"
+  },
+  "peerDependenciesMeta": {
+    "tailwind-merge": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "react": "^19.2.8",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9"
+  }
+}
