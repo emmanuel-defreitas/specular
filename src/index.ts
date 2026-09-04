@@ -1,8 +1,8 @@
 /**
  * `defineSurfaces()` — the shared module.
  *
- * Both the Tailwind plugin (`@exegia/bezel/plugin`) and the tailwind-merge
- * generator (`@exegia/bezel/merge`) consume the same surface config. It has
+ * Both the Tailwind plugin (`@exegia/specular/plugin`) and the tailwind-merge
+ * generator (`@exegia/specular/merge`) consume the same surface config. It has
  * to be a JS module because `@plugin` options are flat scalars only and
  * tailwind-merge runs in the browser where `@plugin` options do not exist.
  * One source of truth, two consumers.

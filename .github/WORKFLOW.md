@@ -62,7 +62,7 @@ branch.
 ## Ready for review → `main`
 
 Mark the draft **ready for review**. `pr.yml` then runs `check` and, because
-the base is `main`, `package`: `npm pack`, uploaded as the `bezel-dist`
+the base is `main`, `package`: `npm pack`, uploaded as the `specular-dist`
 artifact. `main` only accepts `release/vX.Y.Z` heads, and the guard refuses a
 branch whose name disagrees with `package.json`. Merge with **merge commit**.
 
@@ -78,7 +78,7 @@ branch whose name disagrees with `package.json`. Merge with **merge commit**.
 
 The tag triggers `publish.yml`, which re-runs `make ci`, packs the tarball,
 publishes it to npm with provenance (`--access public`), and attaches
-`exegia-bezel-X.Y.Z.tgz` (+ sha256) to the release.
+`exegia-specular-X.Y.Z.tgz` (+ sha256) to the release.
 
 ## Workflows
 

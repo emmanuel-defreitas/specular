@@ -1,16 +1,17 @@
-# @exegia/bezel
+# @exegia/specular
 
-Surface lighting for Tailwind v4 + React. Declare a surface, get a utility
+Specular lighting for Tailwind v4 + React: a highlight that tracks the pointer.
+Declare a surface, get a utility
 family that draws a two-layer inset "bezel" one axis at a time, a
 tailwind-merge config that keeps those utilities alive in `cn()`, and React
 primitives that light the surface with the pointer.
 
 | export | contents |
 |---|---|
-| `@exegia/bezel` | `defineSurfaces` + types — the shared module both consumers import |
-| `@exegia/bezel/plugin` | `createPlugin(surfaces)` — Tailwind v4 plugin factory, pure JS |
-| `@exegia/bezel/merge` | `mergeConfig(surfaces)`, `createCn(surfaces)` — tailwind-merge |
-| `@exegia/bezel/react` | `usePointerLight`, `<Rim>`, `measureRimTone`, `toneToAlphas`, `useRimTone` |
+| `@exegia/specular` | `defineSurfaces` + types — the shared module both consumers import |
+| `@exegia/specular/plugin` | `createPlugin(surfaces)` — Tailwind v4 plugin factory, pure JS |
+| `@exegia/specular/merge` | `mergeConfig(surfaces)`, `createCn(surfaces)` — tailwind-merge |
+| `@exegia/specular/react` | `usePointerLight`, `<Rim>`, `measureRimTone`, `toneToAlphas`, `useRimTone` |
 
 Peers: `tailwindcss@^4.1 <5`; `react@^19` and `tailwind-merge@^3` only if you
 use `/react` or `/merge`. No runtime dependencies.
@@ -22,7 +23,7 @@ flat scalars only, and tailwind-merge runs in the browser.
 
 ```ts
 // bezel.config.ts
-import { defineSurfaces } from "@exegia/bezel"
+import { defineSurfaces } from "@exegia/specular"
 
 export const surfaces = defineSurfaces({
   bezel: {
@@ -42,7 +43,7 @@ export const surfaces = defineSurfaces({
 
 ```js
 // tailwind.plugin.js
-import { createPlugin } from "@exegia/bezel/plugin"
+import { createPlugin } from "@exegia/specular/plugin"
 import { surfaces } from "./bezel.config"
 export default createPlugin(surfaces)
 ```
@@ -54,7 +55,7 @@ export default createPlugin(surfaces)
 
 ```ts
 // lib/utils.ts
-import { createCn } from "@exegia/bezel/merge"
+import { createCn } from "@exegia/specular/merge"
 import { surfaces } from "./bezel.config"
 export const cn = createCn(surfaces)
 ```
@@ -151,7 +152,7 @@ Every entry carries `"use client"`. SSR renders the static emboss; nothing
 touches `window` at module scope.
 
 ```tsx
-import { usePointerLight, Rim, useRimTone, toneToAlphas } from "@exegia/bezel/react"
+import { usePointerLight, Rim, useRimTone, toneToAlphas } from "@exegia/specular/react"
 
 function Avatar({ src }: { src: string }) {
   const ref = useRef<HTMLSpanElement>(null)

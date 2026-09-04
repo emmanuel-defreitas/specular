@@ -3,7 +3,7 @@
  * for every surface comes out of `createPlugin(surfaces)`.
  *
  *   // tailwind.plugin.js
- *   import { createPlugin } from "@exegia/bezel/plugin"
+ *   import { createPlugin } from "@exegia/specular/plugin"
  *   import { surfaces } from "./bezel.config"
  *   export default createPlugin(surfaces)
  *

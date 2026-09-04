@@ -1,4 +1,4 @@
-# @exegia/bezel — build, test, and the release pipeline.
+# @exegia/specular — build, test, and the release pipeline.
 # Run `make help` for the list of targets.
 
 .DEFAULT_GOAL := help
