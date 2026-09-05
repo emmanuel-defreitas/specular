@@ -6,7 +6,7 @@ SHELL         := /bin/bash
 
 DIST_DIR      ?= dist-pack
 
-.PHONY: help install build test lint smoke clean
+.PHONY: help install build test lint smoke clean example-install example-build example-dev
 
 help: ## Show this help message.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort \
@@ -33,7 +33,22 @@ smoke: ## Tailwind compatibility smoke test against the newest peer minor.
 	@npm run --silent smoke
 
 clean: ## Remove build products.
-	@rm -rf dist $(DIST_DIR)
+	@rm -rf dist $(DIST_DIR) $(EXAMPLE_DIR)/dist
+
+# ── Example app ──────────────────────────────────────────────────────────────
+# examples/vite-react depends on the library as `file:../..`, a symlink to this
+# checkout, so the root must be built before the example can compile.
+
+EXAMPLE_DIR   ?= examples/vite-react
+
+example-install: ## Install the example app's dependencies from its lockfile.
+	@cd $(EXAMPLE_DIR) && npm ci
+
+example-build: build example-install ## Typecheck and build the example app against the local library.
+	@cd $(EXAMPLE_DIR) && npm run --silent build
+
+example-dev: build example-install ## Build the library, then start the example's Vite dev server.
+	@cd $(EXAMPLE_DIR) && npm run dev
 
 # ── Release pipeline ──────────────────────────────────────────────────────────
 # The branch model lives in .github/WORKFLOW.md. Every CI step is one target
@@ -59,6 +74,8 @@ GH_REPO            ?= $(shell git config --get remote.origin.url 2>/dev/null | s
 
 # Branch and PR-title types accepted by `pr-guard`.
 TYPES              := feat|fix|chore|docs|ci|refactor|test|perf|build|style|revert
+# Extra branch-name prefixes (agent tools). PR titles still use TYPES.
+BRANCH_PREFIXES    := $(TYPES)|claude
 
 # The released version is the one field in package.json; package-lock.json
 # mirrors it and is re-locked by `version-set`.
@@ -174,8 +191,8 @@ pr-guard: ## Validate a PR's base, branch name and title (env: BASE, HEAD, TITLE
 	    || { echo "::error::package.json declares $$want but the branch is $$HEAD"; exit 1; }; \
 	  ;; \
 	dev|release/v*) \
-	  echo "$$HEAD" | grep -Eq '^($(TYPES))/[a-z0-9][a-z0-9._-]*$$' \
-	    || { echo "::error::branch must be <type>/<slug> — one of $(TYPES) (got '$$HEAD')"; exit 1; }; \
+	  echo "$$HEAD" | grep -Eq '^($(BRANCH_PREFIXES))/[a-z0-9][a-z0-9._-]*$$' \
+	    || { echo "::error::branch must be <type>/<slug> — one of $(BRANCH_PREFIXES) (got '$$HEAD')"; exit 1; }; \
 	  printf '%s' "$${TITLE-}" | grep -Eq '^($(TYPES))(\([a-z0-9._/-]+\))?!?: .+' \
 	    || { echo "::error::PR title must read '<type>: summary' (got '$${TITLE-}')"; exit 1; }; \
 	  ;; \
@@ -184,10 +201,10 @@ pr-guard: ## Validate a PR's base, branch name and title (env: BASE, HEAD, TITLE
 	    || { echo "::error::next only accepts PRs from dev (got '$$HEAD')"; exit 1; }; \
 	  ;; \
 	*/*) \
-	  echo "$$BASE" | grep -Eq '^($(TYPES))/[a-z0-9][a-z0-9._-]*$$' \
-	    || { echo "::error::stack base must be <type>/<slug> — one of $(TYPES) (got '$$BASE')"; exit 1; }; \
-	  echo "$$HEAD" | grep -Eq '^($(TYPES))/[a-z0-9][a-z0-9._-]*$$' \
-	    || { echo "::error::branch must be <type>/<slug> — one of $(TYPES) (got '$$HEAD')"; exit 1; }; \
+	  echo "$$BASE" | grep -Eq '^($(BRANCH_PREFIXES))/[a-z0-9][a-z0-9._-]*$$' \
+	    || { echo "::error::stack base must be <type>/<slug> — one of $(BRANCH_PREFIXES) (got '$$BASE')"; exit 1; }; \
+	  echo "$$HEAD" | grep -Eq '^($(BRANCH_PREFIXES))/[a-z0-9][a-z0-9._-]*$$' \
+	    || { echo "::error::branch must be <type>/<slug> — one of $(BRANCH_PREFIXES) (got '$$HEAD')"; exit 1; }; \
 	  printf '%s' "$${TITLE-}" | grep -Eq '^($(TYPES))(\([a-z0-9._/-]+\))?!?: .+' \
 	    || { echo "::error::PR title must read '<type>: summary' (got '$${TITLE-}')"; exit 1; }; \
 	  ;; \
@@ -250,7 +267,7 @@ tag-release: ## Tag HEAD as v<package.json version> and publish the GitHub Relea
 churn-info: ## Print bump and line counts for FROM...TO (env: FROM, TO).
 	@set -eu; \
 	: "$${FROM:?FROM is required}" "$${TO:?TO is required}"; \
-	stat="$$(git diff --shortstat "$$FROM...$$TO" -- . ':!package-lock.json' 2>/dev/null || true)"; \
+	stat="$$(git diff --shortstat "$$FROM...$$TO" -- . ':!package-lock.json' ':!**/package-lock.json' 2>/dev/null || true)"; \
 	ins="$$(printf '%s' "$$stat" | sed -n 's/.* \([0-9][0-9]*\) insertion.*/\1/p')"; \
 	del="$$(printf '%s' "$$stat" | sed -n 's/.* \([0-9][0-9]*\) deletion.*/\1/p')"; \
 	ins="$${ins:-0}"; del="$${del:-0}"; \
@@ -361,7 +378,7 @@ cleanup-cycle: ## Delete remote feature branches merged into dev, leftover relea
 	git fetch --quiet --force origin "+refs/heads/dev:refs/remotes/origin/dev"; \
 	for ref in $$(git branch -r --merged origin/dev \
 	    | sed 's/^[[:space:]]*origin\///' \
-	    | grep -E '^($(TYPES))/' || true); do \
+	    | grep -E '^($(BRANCH_PREFIXES))/' || true); do \
 	  $(MAKE) -s --no-print-directory delete-branch BRANCH="$$ref"; \
 	done; \
 	open="$$(gh pr list --base $(TRUNK) --state open --json headRefName \
@@ -377,7 +394,7 @@ cleanup-local: ## Delete local feature/release branches whose remotes are gone.
 	git fetch --prune --quiet origin; \
 	current="$$(git rev-parse --abbrev-ref HEAD)"; \
 	for b in $$(git branch --format='%(refname:short)' \
-	    | grep -E '^($(TYPES))/|^release/v' || true); do \
+	    | grep -E '^($(BRANCH_PREFIXES))/|^release/v' || true); do \
 	  [ "$$b" = "$$current" ] && continue; \
 	  if git ls-remote --exit-code --heads origin "$$b" >/dev/null 2>&1; then \
 	    continue; \

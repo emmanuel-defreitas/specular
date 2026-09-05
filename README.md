@@ -209,6 +209,21 @@ A surface named `inset-shadow` with `baseClass: "inset-shadow-bezel"`,
 exactly (`inset-shadow-lit-t-3 inset-shadow-lit/80 …`), and the merge config
 handles the core collision. The tests cover this shape class by class.
 
+## Example app
+
+`examples/vite-react` is a Vite + React 19 + Tailwind v4 page that walks
+through every surface, offset, alpha, blur and colour utility, the `glow`
+hover halo, the pointer-lit rims and the `cn()` merge. It runs against the
+library in this checkout:
+
+```bash
+make example-dev       # build the library, install the example, start Vite
+make example-build     # production build, what CI runs
+```
+
+See [`examples/vite-react/README.md`](examples/vite-react/README.md) for what
+each section shows.
+
 ## Development
 
 ```bash

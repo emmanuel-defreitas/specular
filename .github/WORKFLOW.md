@@ -6,25 +6,28 @@ Release branches are temporary and versioned. Same model as
 with npm in place of SwiftPM.
 
 ```
-<type>/<slug> ──PR──> dev ──PR──> next ──cut──> release/vX.Y.Z ──draft PR──> main ──tag──> vX.Y.Z
-                 (deleted on merge)  (staging)                    (deleted on release)   (publish.yml → npm)
+<type|claude>/<slug> ──PR──> dev ──PR──> next ──cut──> release/vX.Y.Z ──draft PR──> main ──tag──> vX.Y.Z
+                        (deleted on merge)  (staging)                    (deleted on release)   (publish.yml → npm)
 ```
 
 ## Feature branches
 
 Named `<type>/<slug>` with `<type>` one of `feat`, `fix`, `chore`, `docs`,
-`ci`, `refactor`, `test`, `perf`, `build`, `style`, `revert`. Git forbids `:`
-in a ref, so the conventional-commit form is the **PR title**:
+`ci`, `refactor`, `test`, `perf`, `build`, `style`, `revert`. Agent-opened
+branches may also use the `claude/<slug>` prefix (e.g. `claude/add-feature`).
+Git forbids `:` in a ref, so the conventional-commit form is the **PR title**:
 `feat: add spread utilities` (an optional scope `feat(plugin): …` and a `!`
-for breaking changes are accepted).
+for breaking changes are accepted). Titles always use a conventional type —
+`claude` is a branch prefix only.
 
 Branch off `dev` and open a PR back into it. Drafts only run `guard`; marking
 the PR ready runs `check` (typecheck, build, tests, Tailwind smoke test) and
 the AI review. `guard` and `check` are required, and `dev` only accepts
-`<type>/<slug>` heads. Merge with **squash**. The branch deletes itself.
+`<type>/<slug>` or `claude/<slug>` heads. Merge with **squash**. The branch
+deletes itself.
 
-Stacked PRs (`feat/b → feat/a → dev`) pass the guard as long as every branch
-and title follow the convention.
+Stacked PRs (`feat/b → feat/a → dev`, or stacks that include `claude/…`) pass
+the guard as long as every branch and title follow the convention.
 
 ## `dev` → `next`
 
@@ -38,7 +41,7 @@ have it opened, versioned, and auto-merged. Merge with **merge commit**.
 Every push to `next` runs `next.yml`, which:
 
 1. **Estimates the change level** from the churn between `main` and `next`
-   (insertions + deletions, `package-lock.json` excluded):
+   (insertions + deletions, every `package-lock.json` excluded):
 
    | Churn | Bump | Semver |
    |-------|------|--------|
@@ -56,8 +59,8 @@ Every push to `next` runs `next.yml`, which:
 
 Exactly one release is in flight at a time: while a draft PR into `main` is
 open, later pushes to `next` fast-forward that same branch and keep its
-version. Last-minute fixes may PR `<type>/<slug>` directly into the release
-branch.
+version. Last-minute fixes may PR `<type>/<slug>` or `claude/<slug>` directly
+into the release branch.
 
 ## Ready for review → `main`
 
@@ -84,7 +87,7 @@ publishes it to npm with provenance (`--access public`), and attaches
 
 | File | Trigger | Does |
 |------|---------|------|
-| `pr.yml` | PR opened / ready / pushed | `guard`, `check`, `package` (into main), `review` |
+| `pr.yml` | PR opened / ready / pushed | `guard`, `check`, `example`, `package` (into main), `review` |
 | `promote.yml` | 22:00 UTC daily / manual | open `dev → next` PR, auto-merge |
 | `next.yml` | push to `next` / manual | estimate bump, cut or refresh `release/v*` |
 | `pr-merged.yml` | push to `release/v*` | upsert the draft PR into `main` |
