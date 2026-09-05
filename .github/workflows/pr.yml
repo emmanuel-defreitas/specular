@@ -1,7 +1,7 @@
 # Everything that runs *before* a merge.
 #
-#   <type>/<slug>  ->  dev               guard + check + AI review
-#   <type>/<slug>  ->  release/vX.Y.Z    same (last-minute fixes on an in-flight release)
+#   <type|claude>/<slug>  ->  dev               guard + check + AI review
+#   <type|claude>/<slug>  ->  release/vX.Y.Z    same (last-minute fixes on an in-flight release)
 #   dev            ->  next              guard + check
 #   release/vX.Y.Z -> main               guard + check + package artifact
 #
