@@ -6,6 +6,12 @@ updates:
       interval: "weekly"
     target-branch: "dev"
 
+  - package-ecosystem: "npm"
+    directory: "/examples/vite-react"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

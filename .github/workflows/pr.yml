@@ -56,6 +56,18 @@ jobs:
           node -p "'tailwindcss ' + require('tailwindcss/package.json').version"
           make smoke
 
+  # The example app consumes the library as a linked package. Building it
+  # proves the published entry points (`.`, `/plugin`, `/merge`, `/react`)
+  # resolve and typecheck from a real Vite + React consumer.
+  example:
+    name: example
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - run: make example-build
+
   # The release PR's third gate is the publishable artifact itself: the
   # tarball npm consumers install.
   package:

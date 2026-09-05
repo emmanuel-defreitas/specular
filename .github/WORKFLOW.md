@@ -38,7 +38,7 @@ have it opened, versioned, and auto-merged. Merge with **merge commit**.
 Every push to `next` runs `next.yml`, which:
 
 1. **Estimates the change level** from the churn between `main` and `next`
-   (insertions + deletions, `package-lock.json` excluded):
+   (insertions + deletions, every `package-lock.json` excluded):
 
    | Churn | Bump | Semver |
    |-------|------|--------|
@@ -84,7 +84,7 @@ publishes it to npm with provenance (`--access public`), and attaches
 
 | File | Trigger | Does |
 |------|---------|------|
-| `pr.yml` | PR opened / ready / pushed | `guard`, `check`, `package` (into main), `review` |
+| `pr.yml` | PR opened / ready / pushed | `guard`, `check`, `example`, `package` (into main), `review` |
 | `promote.yml` | 22:00 UTC daily / manual | open `dev → next` PR, auto-merge |
 | `next.yml` | push to `next` / manual | estimate bump, cut or refresh `release/v*` |
 | `pr-merged.yml` | push to `release/v*` | upsert the draft PR into `main` |
