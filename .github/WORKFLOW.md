@@ -41,7 +41,8 @@ have it opened, versioned, and auto-merged. Merge with **merge commit**.
 Every push to `next` runs `next.yml`, which:
 
 1. **Estimates the change level** from the churn between `main` and `next`
-   (insertions + deletions, `bun.lock` excluded):
+   (insertions + deletions, `bun.lock` and every `package-lock.json`
+   excluded):
 
    | Churn | Bump | Semver |
    |-------|------|--------|
@@ -65,7 +66,7 @@ into the release branch.
 ## Ready for review → `main`
 
 Mark the draft **ready for review**. `pr.yml` then runs `check` and, because
-the base is `main`, `package`: `bun pm pack`, uploaded as the `bezel-dist`
+the base is `main`, `package`: `bun pm pack`, uploaded as the `specular-dist`
 artifact. `main` only accepts `release/vX.Y.Z` heads, and the guard refuses a
 branch whose name disagrees with `package.json`. Merge with **merge commit**.
 
@@ -81,13 +82,13 @@ branch whose name disagrees with `package.json`. Merge with **merge commit**.
 
 The tag triggers `publish.yml`, which re-runs `make ci`, packs the tarball,
 publishes it to npm with provenance (`--access public`), and attaches
-`exegia-bezel-X.Y.Z.tgz` (+ sha256) to the release.
+`exegia-specular-X.Y.Z.tgz` (+ sha256) to the release.
 
 ## Workflows
 
 | File | Trigger | Does |
 |------|---------|------|
-| `pr.yml` | PR opened / ready / pushed | `guard`, `check`, `package` (into main), `review` |
+| `pr.yml` | PR opened / ready / pushed | `guard`, `check`, `example`, `package` (into main), `review` |
 | `promote.yml` | 22:00 UTC daily / manual | open `dev → next` PR, auto-merge |
 | `next.yml` | push to `next` / manual | estimate bump, cut or refresh `release/v*` |
 | `pr-merged.yml` | push to `release/v*` | upsert the draft PR into `main` |

@@ -1,9 +1,9 @@
 {
   "lockfileVersion": 2,
-  "configVersion": 0,
+  "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@exegia/bezel",
+      "name": "@exegia/specular",
       "devDependencies": {
         "@types/node": "^24.13.3",
         "@types/react": "^19.2.18",

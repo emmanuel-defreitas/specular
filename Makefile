@@ -1,4 +1,4 @@
-# @exegia/bezel — build, test, and the release pipeline.
+# @exegia/specular — build, test, and the release pipeline.
 # Run `make help` for the list of targets.
 
 .DEFAULT_GOAL := help
@@ -6,7 +6,7 @@ SHELL         := /bin/bash
 
 DIST_DIR      ?= dist-pack
 
-.PHONY: help install build test lint smoke clean
+.PHONY: help install build test lint smoke clean example-install example-build example-dev
 
 help: ## Show this help message.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort \
@@ -33,7 +33,22 @@ smoke: ## Tailwind compatibility smoke test against the newest peer minor.
 	@bun run --silent smoke
 
 clean: ## Remove build products.
-	@rm -rf dist $(DIST_DIR)
+	@rm -rf dist $(DIST_DIR) $(EXAMPLE_DIR)/dist
+
+# ── Example app ──────────────────────────────────────────────────────────────
+# examples/vite-react depends on the library as `file:../..`, a symlink to this
+# checkout, so the root must be built before the example can compile.
+
+EXAMPLE_DIR   ?= examples/vite-react
+
+example-install: ## Install the example app's dependencies from its lockfile.
+	@cd $(EXAMPLE_DIR) && npm ci
+
+example-build: build example-install ## Typecheck and build the example app against the local library.
+	@cd $(EXAMPLE_DIR) && npm run --silent build
+
+example-dev: build example-install ## Build the library, then start the example's Vite dev server.
+	@cd $(EXAMPLE_DIR) && npm run dev
 
 # ── Release pipeline ──────────────────────────────────────────────────────────
 # The branch model lives in .github/WORKFLOW.md. Every CI step is one target
@@ -246,7 +261,7 @@ tag-release: ## Tag HEAD as v<package.json version> and publish the GitHub Relea
 churn-info: ## Print bump and line counts for FROM...TO (env: FROM, TO).
 	@set -eu; \
 	: "$${FROM:?FROM is required}" "$${TO:?TO is required}"; \
-	stat="$$(git diff --shortstat "$$FROM...$$TO" -- . ':!bun.lock' 2>/dev/null || true)"; \
+	stat="$$(git diff --shortstat "$$FROM...$$TO" -- . ':!bun.lock' ':!**/package-lock.json' 2>/dev/null || true)"; \
 	ins="$$(printf '%s' "$$stat" | sed -n 's/.* \([0-9][0-9]*\) insertion.*/\1/p')"; \
 	del="$$(printf '%s' "$$stat" | sed -n 's/.* \([0-9][0-9]*\) deletion.*/\1/p')"; \
 	ins="$${ins:-0}"; del="$${del:-0}"; \
