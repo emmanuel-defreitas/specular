@@ -15,22 +15,22 @@ help: ## Show this help message.
 # ── Build & test ──────────────────────────────────────────────────────────────
 
 install: ## Install dependencies from the lockfile.
-	@npm ci
+	@bun install --frozen-lockfile
 
 build: ## Compile src/ to dist/ (ESM + .d.ts).
-	@npm run --silent build
+	@bun run --silent build
 
 test: ## Run the test suite (node --test, no framework).
-	@npm run --silent test
+	@bun run --silent test
 
 lint: ## Typecheck strictly; tsc is the linter here.
-	@npm run --silent lint
+	@bun run --silent lint
 
 # Compiles bezel-lit-t-2 / -t-1.5 against the installed Tailwind. Guards the
 # undocumented `__BARE_VALUE__` key the plugin relies on: a Tailwind minor
 # that drops it fails here, not in a consumer.
 smoke: ## Tailwind compatibility smoke test against the newest peer minor.
-	@npm run --silent smoke
+	@bun run --silent smoke
 
 clean: ## Remove build products.
 	@rm -rf dist $(DIST_DIR)
@@ -47,8 +47,8 @@ BUMP               ?= minor
 
 # Line-count thresholds for promote: insertions+deletions of next...dev.
 # < CHURN_MINOR → patch (0.0.+1); < CHURN_MAJOR → minor (0.+1.0); else major.
-CHURN_MINOR        ?= 100
-CHURN_MAJOR        ?= 1000
+CHURN_MINOR        ?= 500
+CHURN_MAJOR        ?= 10000
 
 # Commit range for `release-notes`.
 RANGE              ?= origin/$(TRUNK)..HEAD
@@ -62,11 +62,11 @@ TYPES              := feat|fix|chore|docs|ci|refactor|test|perf|build|style|reve
 # Extra branch-name prefixes (agent tools). PR titles still use TYPES.
 BRANCH_PREFIXES    := $(TYPES)|claude
 
-# The released version is the one field in package.json; package-lock.json
-# mirrors it and is re-locked by `version-set`.
+# The released version lives in package.json alone; bun.lock records no
+# version, so there is no second copy to keep in sync.
 pkg_version         = node -p "require('./package.json').version"
 
-.PHONY: pkg-version next-version version-set version-check release-notes pr-guard ci pack \
+.PHONY: pkg-version next-version version-set release-notes pr-guard ci pack \
         release-pr release-branch delete-branch tag-release \
         rulesets-diff rulesets-apply \
         churn-info churn-bump bootstrap-lanes promote-pr cut-release \
@@ -77,22 +77,16 @@ pkg_version         = node -p "require('./package.json').version"
 pkg-version: ## Print the version in package.json.
 	@echo "$$($(pkg_version))"
 
-version-set: ## Write VERSION into package.json and package-lock.json (env: VERSION).
+version-set: ## Write VERSION into package.json (env: VERSION).
 	@set -eu; : "$${VERSION:?VERSION is required}"; \
-	npm version --no-git-tag-version --allow-same-version "$$VERSION" >/dev/null; \
+	bun pm version --no-git-tag-version --allow-same-version "$$VERSION" >/dev/null; \
 	echo "  version is now $$VERSION"
 
-version-check: ## Fail if package.json and package-lock.json disagree on the version.
-	@set -eu; v="$$($(pkg_version))"; \
-	l="$$(node -p "require('./package-lock.json').version")"; \
-	[ "$$v" = "$$l" ] || { echo "::error::package-lock.json carries $$l but package.json is $$v"; exit 1; }; \
-	echo "version $$v is consistent"
-
-ci: lint version-check build test smoke ## Everything CI runs on a pull request.
+ci: lint build test smoke ## Everything CI runs on a pull request.
 
 pack: build ## Build the publishable tarball (the artifact CI uploads and attaches to the release).
 	@set -eu; rm -rf $(DIST_DIR); mkdir -p $(DIST_DIR); \
-	npm pack --pack-destination $(DIST_DIR) >/dev/null; \
+	bun pm pack --destination $(DIST_DIR) --quiet >/dev/null; \
 	(cd $(DIST_DIR) && for f in *.tgz; do shasum -a 256 "$$f" > "$$f.sha256"; done); \
 	ls -lh $(DIST_DIR)
 
@@ -131,7 +125,7 @@ cut-release: ## Cut or refresh release/v<VERSION> from origin/next (env: VERSION
 	  git checkout --quiet -B "$$branch" origin/next; \
 	fi; \
 	$(MAKE) -s --no-print-directory version-set VERSION="$$version"; \
-	git add package.json package-lock.json; \
+	git add package.json; \
 	if git diff --cached --quiet; then \
 	  echo "version already $$version"; \
 	else \
@@ -252,7 +246,7 @@ tag-release: ## Tag HEAD as v<package.json version> and publish the GitHub Relea
 churn-info: ## Print bump and line counts for FROM...TO (env: FROM, TO).
 	@set -eu; \
 	: "$${FROM:?FROM is required}" "$${TO:?TO is required}"; \
-	stat="$$(git diff --shortstat "$$FROM...$$TO" -- . ':!package-lock.json' 2>/dev/null || true)"; \
+	stat="$$(git diff --shortstat "$$FROM...$$TO" -- . ':!bun.lock' 2>/dev/null || true)"; \
 	ins="$$(printf '%s' "$$stat" | sed -n 's/.* \([0-9][0-9]*\) insertion.*/\1/p')"; \
 	del="$$(printf '%s' "$$stat" | sed -n 's/.* \([0-9][0-9]*\) deletion.*/\1/p')"; \
 	ins="$${ins:-0}"; del="$${del:-0}"; \

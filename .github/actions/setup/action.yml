@@ -1,12 +1,14 @@
 name: Setup
-description: Install Node from .nvmrc and restore the npm cache.
+description: Install Node from .nvmrc and Bun, then install dependencies from bun.lock.
 
 runs:
   using: composite
   steps:
+    # Node is still the runtime: `node --test` runs the suite and tsc builds.
+    # Bun is only the package manager.
     - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version-file: .nvmrc
-        cache: npm
+    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
     - shell: bash
-      run: npm ci
+      run: bun install --frozen-lockfile

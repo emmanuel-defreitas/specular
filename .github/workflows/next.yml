@@ -5,7 +5,7 @@
 #      from the churn between main and next, unless the promote PR already
 #      recorded a version;
 #   2. check out release/vX.Y.Z from next and write X.Y.Z into
-#      package.json (and package-lock.json);
+#      package.json;
 #   3. push it — which is what makes pr-merged.yml create the draft PR.
 name: Next
 

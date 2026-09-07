@@ -52,7 +52,7 @@ jobs:
       # drops it fails here, before a consumer upgrades.
       - name: Smoke test against the newest tailwindcss peer minor
         run: |
-          npm install --no-save "tailwindcss@^4.1 <5"
+          bun add --no-save "tailwindcss@^4.1 <5"
           node -p "'tailwindcss ' + require('tailwindcss/package.json').version"
           make smoke
 

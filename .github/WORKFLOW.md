@@ -3,7 +3,7 @@
 Two long-lived integration lanes (`dev`, `next`) plus `main` and the tags.
 Release branches are temporary and versioned. Same model as
 [MetaBookSDK](https://github.com/emmanuel-defreitas/MetaBookSDK/blob/main/.github/WORKFLOW.md),
-with npm in place of SwiftPM.
+with bun in place of SwiftPM.
 
 ```
 <type|claude>/<slug> ──PR──> dev ──PR──> next ──cut──> release/vX.Y.Z ──draft PR──> main ──tag──> vX.Y.Z
@@ -41,7 +41,7 @@ have it opened, versioned, and auto-merged. Merge with **merge commit**.
 Every push to `next` runs `next.yml`, which:
 
 1. **Estimates the change level** from the churn between `main` and `next`
-   (insertions + deletions, `package-lock.json` excluded):
+   (insertions + deletions, `bun.lock` excluded):
 
    | Churn | Bump | Semver |
    |-------|------|--------|
@@ -52,7 +52,7 @@ Every push to `next` runs `next.yml`, which:
    A `<!-- release: vX.Y.Z -->` marker left by the promote PR wins; a
    `workflow_dispatch` with `bump` set overrides both.
 2. **Checks out `release/vX.Y.Z` from `next`**, writes `X.Y.Z` into
-   `package.json` and `package-lock.json` (`npm version`), commits
+   `package.json` (`bun pm version`), commits
    `chore(release): open vX.Y.Z`, and pushes.
 3. That push runs `pr-merged.yml`, which **opens (or refreshes) a draft PR**
    from `release/vX.Y.Z` into `main` with generated release notes.
@@ -65,7 +65,7 @@ into the release branch.
 ## Ready for review → `main`
 
 Mark the draft **ready for review**. `pr.yml` then runs `check` and, because
-the base is `main`, `package`: `npm pack`, uploaded as the `bezel-dist`
+the base is `main`, `package`: `bun pm pack`, uploaded as the `bezel-dist`
 artifact. `main` only accepts `release/vX.Y.Z` heads, and the guard refuses a
 branch whose name disagrees with `package.json`. Merge with **merge commit**.
 
