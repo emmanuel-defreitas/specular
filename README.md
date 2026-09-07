@@ -1,10 +1,32 @@
+<div align="center">
+
+<img src="assets/logo.svg" alt="" width="132" height="132">
+
 # @exegia/specular
 
-Specular lighting for Tailwind v4 + React: a highlight that tracks the pointer.
-Declare a surface, get a utility
-family that draws a two-layer inset "bezel" one axis at a time, a
-tailwind-merge config that keeps those utilities alive in `cn()`, and React
-primitives that light the surface with the pointer.
+**✨ Specular lighting for Tailwind v4 + React — a two-layer inset bezel as
+utilities, a `cn()` that keeps them alive, and a rim highlight that tracks the
+pointer.**
+
+[![npm](https://img.shields.io/npm/v/@exegia/specular?color=6366f1&labelColor=1c1917)](https://www.npmjs.com/package/@exegia/specular) [![types](https://img.shields.io/npm/types/@exegia/specular?color=38bdf8&labelColor=1c1917)](https://www.npmjs.com/package/@exegia/specular) [![provenance](https://img.shields.io/badge/npm-provenance-a855f7?labelColor=1c1917)](https://www.npmjs.com/package/@exegia/specular#provenance) [![runtime deps](https://img.shields.io/badge/runtime%20deps-0-f43f5e?labelColor=1c1917)](#install) [![license](https://img.shields.io/npm/l/@exegia/specular?color=fbbf24&labelColor=1c1917)](LICENSE)
+
+<img src="assets/demo.gif" alt="Six avatars whose rim highlights turn to follow the pointer as it moves across them" width="100%">
+
+<sub>Six discs, one window listener. Recorded from <a href="examples/vite-react"><code>examples/vite-react</code></a>.</sub>
+
+</div>
+
+---
+
+Declare a surface, get a utility family that draws a two-layer inset "bezel"
+one axis at a time, a tailwind-merge config that keeps those utilities alive
+in `cn()`, and React primitives that light the surface with the pointer.
+
+## Install
+
+```bash
+npm i @exegia/specular      # or: bun add / pnpm add / yarn add
+```
 
 | export | contents |
 |---|---|
