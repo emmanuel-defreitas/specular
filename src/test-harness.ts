@@ -21,4 +21,8 @@ export async function build(css: string, plugin: PluginCreator, candidates: stri
 export const PREAMBLE = `@import "tailwindcss"; @plugin "x";`
 
 /** Everything from `@layer utilities` on. */
-export const utilities = (css: string): string => css.slice(css.indexOf("@layer utilities"))
+export const utilities = (css: string): string => {
+  const i = css.indexOf("@layer utilities")
+  if (i === -1) throw new Error('Expected "@layer utilities" in compiled CSS')
+  return css.slice(i)
+}
