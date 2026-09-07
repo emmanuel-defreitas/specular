@@ -60,7 +60,7 @@ GH_REPO            ?= $(shell git config --get remote.origin.url 2>/dev/null | s
 # Branch and PR-title types accepted by `pr-guard`.
 TYPES              := feat|fix|chore|docs|ci|refactor|test|perf|build|style|revert
 # Extra branch-name prefixes (agent tools). PR titles still use TYPES.
-BRANCH_PREFIXES    := $(TYPES)|claude
+BRANCH_PREFIXES    := $(TYPES)|claude|copilot
 
 # The released version lives in package.json alone; bun.lock records no
 # version, so there is no second copy to keep in sync.
