@@ -45,6 +45,11 @@ jobs:
           fetch-tags: true
           token: ${{ steps.app-token.outputs.token }}
 
+      # `version-set` runs `bun pm version`. This job deliberately skips the
+      # composite setup action — it needs neither node_modules nor a Node
+      # install — but bun is not preinstalled on the runner the way npm was.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+
       - name: Estimate the change level and cut or refresh the release branch
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
