@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128"
+     fill="none" role="img" aria-label="specular">
+  <title>specular</title>
+  <defs>
+    <!-- The pointer-lit rim: the conic sweep <Rim> draws, as a gradient arc. -->
+    <linearGradient id="s-rim" x1="6" y1="98" x2="118" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0"    stop-color="#fbbf24"/>
+      <stop offset=".28"  stop-color="#f43f5e"/>
+      <stop offset=".58"  stop-color="#a855f7"/>
+      <stop offset=".82"  stop-color="#6366f1"/>
+      <stop offset="1"    stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <!-- The surface itself: lit from 10 o'clock, falling away to the lower right. -->
+    <radialGradient id="s-body" cx="38%" cy="30%" r="82%">
+      <stop offset="0"   stop-color="#fafaf9"/>
+      <stop offset=".48" stop-color="#a8a29e"/>
+      <stop offset="1"   stop-color="#44403c"/>
+    </radialGradient>
+
+    <!-- lit: the inset white layer, top edge only. -->
+    <linearGradient id="s-lit" x1="0" y1="22" x2="0" y2="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0"   stop-color="#fff" stop-opacity=".95"/>
+      <stop offset="1"   stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- dim: the inset black layer, bottom edge only. Not the lit values dimmed. -->
+    <linearGradient id="s-dim" x1="0" y1="106" x2="0" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0"   stop-color="#000" stop-opacity=".6"/>
+      <stop offset="1"   stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- The specular highlight the library is named for. -->
+    <radialGradient id="s-spec" cx="50%" cy="50%" r="50%">
+      <stop offset="0"   stop-color="#fff" stop-opacity=".92"/>
+      <stop offset=".55" stop-color="#fff" stop-opacity=".22"/>
+      <stop offset="1"   stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- rim: a 220° sweep, open at the bottom where the light does not reach -->
+  <path d="M11.4 83.1A56 56 0 1 1 116.6 83.1" stroke="url(#s-rim)"
+        stroke-width="9" stroke-linecap="round"/>
+
+  <!-- the surface -->
+  <circle cx="64" cy="64" r="42" fill="url(#s-body)"/>
+
+  <!-- keeps the silhouette readable on a near-white page, where the lit
+       edge would otherwise blend into the background -->
+  <circle cx="64" cy="64" r="42" stroke="#78716c" stroke-opacity=".3" stroke-width="1.5"/>
+
+  <!-- two inset layers, one axis each -->
+  <circle cx="64" cy="64" r="39" stroke="url(#s-lit)" stroke-width="5.5"/>
+  <circle cx="64" cy="64" r="39" stroke="url(#s-dim)" stroke-width="5.5"/>
+
+  <!-- the highlight -->
+  <ellipse cx="50" cy="45" rx="18" ry="13.5" fill="url(#s-spec)"
+           transform="rotate(-28 50 45)"/>
+</svg>
