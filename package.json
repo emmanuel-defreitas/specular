@@ -1,7 +1,10 @@
 {
   "name": "@exegia/specular",
-  "version": "0.0.0",
-  "repository": { "type": "git", "url": "git+https://github.com/emmanuel-defreitas/specular.git" },
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmanuel-defreitas/specular.git"
+  },
   "description": "Specular lighting for Tailwind v4 + React: pointer-tracking rim highlights, two-layer inset bezels as utilities, and a tailwind-merge config that keeps them alive in cn().",
   "license": "MIT",
   "type": "module",
