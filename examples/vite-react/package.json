@@ -1,0 +1,31 @@
+{
+  "name": "@exegia/specular-example-vite",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Showcase for @exegia/specular: bezels, colours, intensity, and pointer-lit rims in a Vite + React + Tailwind v4 app.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@exegia/specular": "file:../..",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "~5.9",
+    "vite": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

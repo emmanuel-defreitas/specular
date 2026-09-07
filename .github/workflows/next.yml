@@ -5,7 +5,7 @@
 #      from the churn between main and next, unless the promote PR already
 #      recorded a version;
 #   2. check out release/vX.Y.Z from next and write X.Y.Z into
-#      package.json (and package-lock.json);
+#      package.json;
 #   3. push it — which is what makes pr-merged.yml create the draft PR.
 name: Next
 
@@ -52,8 +52,8 @@ jobs:
           BUMP_INPUT: ${{ inputs.bump || 'auto' }}
         run: |
           set -eu
-          git config user.name  "bezel-automation[bot]"
-          git config user.email "bezel-automation[bot]@users.noreply.github.com"
+          git config user.name  "specular-automation[bot]"
+          git config user.email "specular-automation[bot]@users.noreply.github.com"
 
           git fetch --quiet --force origin \
             +refs/heads/main:refs/remotes/origin/main \
