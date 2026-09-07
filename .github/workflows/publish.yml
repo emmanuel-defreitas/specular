@@ -87,7 +87,10 @@ jobs:
           if [ -z "$NODE_AUTH_TOKEN" ]; then
             echo "::error::NPM_TOKEN is not set — add it under Settings → Secrets and variables → Actions"; exit 1
           fi
-          npm publish dist-pack/*.tgz --provenance --access public
+          # `./` matters: npm parses a bare `a/b` argument as its GitHub
+          # owner/repo shorthand, so `dist-pack/x.tgz` becomes a git clone
+          # attempt, not a file. A leading `./` forces the path reading.
+          npm publish ./dist-pack/*.tgz --provenance --access public
 
       - name: Attach the tarball to the GitHub Release
         env:
