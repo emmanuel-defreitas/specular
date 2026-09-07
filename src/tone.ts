@@ -48,6 +48,7 @@ export const toneCache = new Map<string, Promise<number | null>>()
  * Memoised per `src`; a `null` is not kept.
  */
 export function measureRimTone(src: string): Promise<number | null> {
+  if (!src) return Promise.resolve(null)
   const cached = toneCache.get(src)
   if (cached) return cached
   const promise = new Promise<number | null>((resolve) => {
