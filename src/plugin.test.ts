@@ -26,7 +26,8 @@ const block = (selector: string, decls: string[]) =>
 test("every row of the utility table", async () => {
   const css = utilities(
     await build(PREAMBLE, createPlugin(surfaces), [
-      "bezel-base", "bezel-lit", "bezel-lit/40", "bezel-lit/[0.4]",
+      "bezel-base", "bezel-lit", "bezel-lit/40", "bezel-lit/[0.4]", "bezel-lit/100",
+      "bezel-lit-[35]",
       "bezel-lit-t-2", "bezel-lit-b-1.5", "bezel-lit-l-[0.5rem]", "bezel-lit-r-3", "bezel-lit-b-[0.5rem]",
       "bezel-lit-blur-3", "bezel-lit-spread-1", "bezel-lit-color-red-500", "bezel-lit-color-[#123]",
       "bezel-blur-6", "bezel-spread-2", "card-drop-b-4",
@@ -34,8 +35,12 @@ test("every row of the utility table", async () => {
   )
   const expect = (selector: string, decls: string[]) => assert.ok(css.includes(block(selector, decls)), `missing ${selector}\n${css}`)
   assert.ok(css.includes("  .bezel-base {\n    box-shadow: var(--tw-bezel-shadow);\n  }"))
-  expect(".bezel-lit", ["--tw-bezel-lit-alpha: 100"])
+  // Bare: the composed box-shadow only. The alpha chain falls through to the
+  // preset and then the config, so the `dark` block still applies.
+  assert.ok(css.includes("  .bezel-lit {\n    box-shadow: var(--tw-bezel-shadow);\n  }"), `bare bezel-lit must not set alpha\n${css}`)
   expect(".bezel-lit\\/40", ["--tw-bezel-lit-alpha: 40"])
+  expect(".bezel-lit\\/100", ["--tw-bezel-lit-alpha: 100"])
+  expect(".bezel-lit-\\[35\\]", ["--tw-bezel-lit-alpha: 35"])
   expect(".bezel-lit\\/\\[0\\.4\\]", ["--tw-bezel-lit-alpha: 40"])
   expect(".bezel-lit-t-2", ["--tw-bezel-lit-y: calc(2 * 1px)"])
   expect(".bezel-lit-b-1\\.5", ["--tw-bezel-lit-y: calc(1.5 * -1px)"])
@@ -49,6 +54,19 @@ test("every row of the utility table", async () => {
   expect(".bezel-blur-6", ["--tw-bezel-lit-blur: calc(6 * 1px)", "--tw-bezel-dim-blur: calc(6 * 1px)"])
   expect(".bezel-spread-2", ["--tw-bezel-lit-spread: calc(2 * 1px)", "--tw-bezel-dim-spread: calc(2 * 1px)"])
   assert.ok(css.includes("  .card-drop-b-4 {\n    box-shadow: var(--tw-card-shadow);\n    --tw-card-drop-y: calc(4 * -1px);\n  }"))
+})
+
+test("bare layer class under the dark preset resolves to the dark alpha", async () => {
+  // Static proof of the three-tier chain for `bezel-lit` inside `.dark`:
+  // the utility writes no instance alpha, the dark block writes the preset,
+  // and the composed shadow reads instance → preset → config.
+  const css = await build(PREAMBLE, createPlugin(surfaces), ["bezel-lit", "bezel-dim"])
+  const rule = (name: string) => css.slice(css.indexOf(`  .${name} {`), css.indexOf("}", css.indexOf(`  .${name} {`)))
+  assert.ok(!rule("bezel-lit").includes("--tw-bezel-lit-alpha"), rule("bezel-lit"))
+  assert.ok(!rule("bezel-dim").includes("--tw-bezel-dim-alpha"), rule("bezel-dim"))
+  assert.ok(css.includes(".dark {\n    --bezel-lit-y: 1px;\n    --bezel-lit-blur: 1px;\n    --bezel-lit-alpha: 5;"))
+  assert.ok(css.includes("calc(var(--tw-bezel-lit-alpha, var(--bezel-lit-alpha, 80)) * 1%)"))
+  assert.ok(css.includes("calc(var(--tw-bezel-dim-alpha, var(--bezel-dim-alpha, 15)) * 1%)"))
 })
 
 test("file: and dark: variants, and @apply inside @layer components", async () => {
@@ -112,6 +130,7 @@ test("migration surface reproduces corpora-ui's inset-shadow-* API", async () =>
   has(".inset-shadow-bezel {\n    box-shadow: var(--tw-inset-shadow-shadow);\n  }")
   has(".inset-shadow-lit-t-3 {\n    box-shadow: var(--tw-inset-shadow-shadow);\n    --tw-inset-shadow-lit-y: calc(3 * 1px);")
   has(".inset-shadow-lit\\/80 {\n    box-shadow: var(--tw-inset-shadow-shadow);\n    --tw-inset-shadow-lit-alpha: 80;")
+  has(".inset-shadow-dim\\/15 {\n    box-shadow: var(--tw-inset-shadow-shadow);\n    --tw-inset-shadow-dim-alpha: 15;")
   has(".inset-shadow-dim-b-1 {\n    box-shadow: var(--tw-inset-shadow-shadow);\n    --tw-inset-shadow-dim-y: calc(1 * -1px);")
   has(".inset-shadow-blur-3 {\n    box-shadow: var(--tw-inset-shadow-shadow);\n    --tw-inset-shadow-lit-blur: calc(3 * 1px);\n    --tw-inset-shadow-dim-blur: calc(3 * 1px);")
   has(".inset-shadow-lit-l-\\[0\\.5rem\\] {\n    box-shadow: var(--tw-inset-shadow-shadow);\n    --tw-inset-shadow-lit-x: 0.5rem;")

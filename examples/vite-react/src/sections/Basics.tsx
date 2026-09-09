@@ -13,8 +13,9 @@ export function Basics() {
           A <em>surface</em> is a named set of shadow layers declared once in <code className="font-mono text-[0.9em]">specular.config.ts</code>. The plugin
           turns each layer into utilities that write one custom property each, and every utility also emits the composed{" "}
           <code className="font-mono text-[0.9em]">box-shadow</code>, so any single class stands on its own.{" "}
-          <code className="font-mono text-[0.9em]">bezel-base</code> is the surface exactly as configured; <code className="font-mono text-[0.9em]">bezel-lit</code>{" "}
-          is the same with that layer pushed to full alpha, and <code className="font-mono text-[0.9em]">bezel-lit/40</code> sets it explicitly. This page
+          <code className="font-mono text-[0.9em]">bezel-base</code> is the surface exactly as configured, and so is the bare{" "}
+          <code className="font-mono text-[0.9em]">bezel-lit</code>; <code className="font-mono text-[0.9em]">bezel-lit/40</code> sets that layer's alpha
+          explicitly and <code className="font-mono text-[0.9em]">bezel-lit/100</code> is full strength. This page
           declares four surfaces: <em>bezel</em>, <em>card</em>, <em>well</em> and <em>glow</em>.
         </>
       }
@@ -27,14 +28,14 @@ export function Basics() {
 <div class="size-20 rounded-full bg-stone-300 bezel-base" />    <!-- emboss: lit 80% on top, dim 15% below -->
 <div class="size-20 rounded-full bg-stone-300 card-base" />     <!-- raised: hairline inside, drop shadow outside -->
 <div class="size-20 rounded-full bg-stone-300 well-base" />     <!-- recessed: shade cast in from the top -->
-<div class="size-20 rounded-full bg-stone-300 bezel-lit bezel-dim" />   <!-- both layers at full alpha -->`}
+<div class="size-20 rounded-full bg-stone-300 bezel-lit/100 bezel-dim/100" />   <!-- both layers at full alpha -->`}
       >
         <div className="flex flex-wrap items-start justify-around gap-8">
           <Swatch classes="" label="flat" />
           <Swatch classes="bezel-base" label="bezel — emboss" />
           <Swatch classes="card-base" label="card — raised" />
           <Swatch classes="well-base" label="well — recessed" />
-          <Swatch classes="bezel-lit bezel-dim" label="bezel — full alpha" />
+          <Swatch classes="bezel-lit/100 bezel-dim/100" label="bezel — full alpha" />
         </div>
       </Demo>
 

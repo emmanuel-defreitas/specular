@@ -73,6 +73,10 @@ export function normalizeAlpha(raw: string): string {
   return v
 }
 
+/** The `DEFAULT` value handed to the bare layer class. A sentinel, not a
+ * number, so `S-L-[100]` (an arbitrary value) still writes the alpha. */
+const CONFIGURED = "configured"
+
 const instanceVar = (s: string, l: string, p: LayerProp) => `--tw-${s}-${l}-${p}`
 const presetVar = (s: string, l: string, p: LayerProp) => `--${s}-${l}-${p}`
 
@@ -142,10 +146,17 @@ export function createPlugin(surfaces: Surfaces, options: PluginOptions = {}) {
         const set = (p: LayerProp, f: (value: string) => string = (x) => x): Utility =>
           (value) => ({ ...base, [v(p)]: f(value) })
 
-        // Bare = full alpha; `/40` and `/[0.4]` = 40.
+        // Bare = the configured alpha: the class emits only the composed
+        // box-shadow, so the alpha chain falls through to the preset (the
+        // `dark` block) and then the config. Writing 100 here would make the
+        // canonical `bezel-lit bezel-dim` ignore both. `/40` and `/[0.4]` = 40;
+        // `/100` is the explicit full-strength form.
         matchUtilities(
-          { [n]: (value, { modifier }) => ({ ...base, [v("alpha")]: normalizeAlpha(modifier ?? value) }) },
-          { values: { DEFAULT: "100" }, modifiers: "any" }
+          {
+            [n]: (value, { modifier }) =>
+              modifier === null && value === CONFIGURED ? base : { ...base, [v("alpha")]: normalizeAlpha(modifier ?? value) },
+          },
+          { values: { DEFAULT: CONFIGURED }, modifiers: "any" }
         )
         // The letter names the edge the light enters from.
         matchUtilities(

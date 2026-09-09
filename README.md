@@ -119,8 +119,8 @@ For a surface `S` and a layer `L`. Every utility also emits the base
 | utility | writes |
 |---|---|
 | `S-base` (or `baseClass`) | `box-shadow: var(--tw-S-shadow)` |
-| `S-L` | `--tw-S-L-alpha: 100` |
-| `S-L/40`, `S-L/[0.4]` | `--tw-S-L-alpha: 40` (fractions are scaled; `/80` ≡ `/[0.8]`) |
+| `S-L` | the base `box-shadow` only: layer `L` at its configured alpha, so the `dark` preset applies |
+| `S-L/40`, `S-L/[0.4]` | `--tw-S-L-alpha: 40` (fractions are scaled; `/80` ≡ `/[0.8]`); `/100` is explicit full strength |
 | `S-L-t-N` | `--tw-S-L-y: calc(N * 1px)` — light enters from the top, pushes the layer down |
 | `S-L-b-N` | `--tw-S-L-y: calc(N * -1px)` |
 | `S-L-l-N` / `S-L-r-N` | `--tw-S-L-x` |
