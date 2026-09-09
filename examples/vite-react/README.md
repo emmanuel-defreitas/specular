@@ -13,7 +13,7 @@ make example-build      # the same, but a production build into examples/vite-re
 Or by hand:
 
 ```bash
-npm ci && npm run build                       # the library → dist/
+bun install --frozen-lockfile && bun run build   # the library → dist/ (bun is the root's package manager)
 cd examples/vite-react && npm ci && npm run dev
 ```
 
@@ -52,13 +52,12 @@ vite.config.ts       resolve.dedupe for react — see the comment there
 
 ## Two things worth knowing
 
-- **`bezel-base` versus `bezel-lit`.** `S-base` is the surface exactly as
-  configured: every layer at the alpha, blur and offset in the config, and the
-  dark presets apply. The bare layer class `S-L` sets *that layer's alpha to
-  100*, which overrides both the configured alpha and the dark preset. This app
-  therefore uses `-base` wherever it means "the default look" and `S-L/N` where
-  it wants a specific alpha; `bezel-lit bezel-dim` appears once, labelled "full
-  alpha".
+- **`bezel-base` versus `bezel-lit`.** Both give the surface exactly as
+  configured, dark presets included: `S-base` emits the composed `box-shadow`
+  and nothing else, and the bare layer class `S-L` does the same (it is the
+  hook that `S-L/N` hangs off). `S-L/N` sets that layer's alpha explicitly and
+  `S-L/100` is full strength. This app uses `-base` where it means "the default
+  look" and `S-L/N` where it wants a specific alpha.
 - **`resolve.dedupe` in `vite.config.ts`.** `file:../..` links the package as a
   symlink and Vite resolves the linked files to their real path, from which a
   bare `import "react"` finds the repository's own devDependency copy, a
