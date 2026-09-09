@@ -90,15 +90,15 @@ export function Intensity() {
     >
       <Demo
         title="Brightness: the highlight alpha"
-        description="From invisible to full white. The bare class is 100; /N and /[0.N] are the same thing."
-        code={`<div class="bezel-lit/10" /> <div class="bezel-lit/25" /> <div class="bezel-lit/50" /> <div class="bezel-lit/80" /> <div class="bezel-lit" />`}
+        description="From invisible to full white. /N and /[0.N] are the same thing; the bare class keeps the configured alpha (80 here)."
+        code={`<div class="bezel-lit/10" /> <div class="bezel-lit/25" /> <div class="bezel-lit/50" /> <div class="bezel-lit" /> <div class="bezel-lit/100" />`}
       >
         <div className="flex flex-wrap items-start justify-around gap-6">
           <Swatch classes="bezel-lit/10" />
           <Swatch classes="bezel-lit/25" />
           <Swatch classes="bezel-lit/50" />
-          <Swatch classes="bezel-lit/80" />
-          <Swatch classes="bezel-lit" label="100" />
+          <Swatch classes="bezel-lit" label="configured (80)" />
+          <Swatch classes="bezel-lit/100" label="100" />
         </div>
       </Demo>
 
