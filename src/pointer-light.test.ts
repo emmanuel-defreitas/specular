@@ -16,8 +16,27 @@ Object.assign(globalThis, {
 })
 const move = (x: number, y: number) => {
   for (const l of listeners) l({ clientX: x, clientY: y })
-  frame?.()
-  frame = null
+  // flush() may self-schedule (damped settle), so drain every queued frame.
+  while (frame) {
+    const f = frame
+    frame = null
+    f()
+  }
+}
+const moveOnce = (x: number, y: number) => {
+  for (const l of listeners) l({ clientX: x, clientY: y })
+  if (frame) {
+    const f = frame
+    frame = null
+    f()
+  }
+}
+const pump = () => {
+  while (frame) {
+    const f = frame
+    frame = null
+    f()
+  }
 }
 // Centred at the origin.
 const el = { getBoundingClientRect: () => ({ left: -5, top: -5, width: 10, height: 10 }) } as unknown as Element
@@ -35,6 +54,21 @@ test("unwrap steps by the shortest arc and gates on epsilon", () => {
   assert.equal(unwrap(10, 350), -10)
   assert.equal(unwrap(370, 15), 375)
   assert.equal(unwrap(100, 101), null)
+})
+
+test("damped subscribers ease along the shortest arc and settle", () => {
+  const out: number[] = []
+  const off = subscribe(() => el, (v) => out.push(v), 0.5)
+  moveOnce(10, 0) // first flush: NaN last → snaps to bearing 90
+  assert.equal(out.at(-1), 90)
+  moveOnce(0, 10) // bearing 180 → one frame eases halfway to 135, then settles
+  assert.equal(out.at(-1), 135)
+  while (frame) pump()
+  assert.ok(out.at(-1)! > 178 && out.at(-1)! <= 180, "settles at the bearing")
+  const after = out.length
+  pump()
+  assert.equal(out.length, after, "no writes once settled")
+  off()
 })
 
 test("subscribers share one listener; angles flow through the registry", () => {

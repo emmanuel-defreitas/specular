@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@import "@ambientcss/css/ambient.css";
+@plugin "../specular.plugin.ts";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    @apply bg-stone-100 text-stone-800 antialiased dark:bg-stone-950 dark:text-neutral-200;
+  }
+}
+
+/* One lighting environment for the Ambient CSS scene — the same rig
+   ambientcss.com runs (hue 234, sat 15%, key .9, fill .7). The section keeps
+   its own light bench background so the plates sit in a matching scene. */
+.amb-scene {
+  --amb-light-x: -1;
+  --amb-light-y: -1;
+  --amb-key-light-intensity: 1;
+  --amb-fill-light-intensity: 0.6;
+  --amb-light-hue: 234;
+  --amb-light-saturation: 15%;
+  --amb-highlight-color: white;
+  --amb-shade: 1.1;
+  --amb-albedo: color(srgb-linear 0.82 0.82 0.82);
+  /* Shadow opacity gain — ambient.css multiplies every shadow alpha by this
+     (default 1). Toned down: the concave read too dark. */
+  --amb-sh-gain: 0.55;
+  background: #e2e2e2;
+}
+
+/* Night: same rig, dark material — albedo matched to ambientcss.com's night
+   knob (srgb-linear 0.09), bench just above it so the plates still pop. */
+.dark .amb-scene {
+  /* Plates just above the bench (≈ #2b2b30), shadows barely-there, and a
+     light label so text contrast works on dark material. */
+  --amb-albedo: color(srgb-linear 0.03 0.03 0.034);
+  --amb-light-saturation: 0%;
+  --amb-sh-gain: 0.35;
+  --amb-label: hsl(234 5% 85%);
+  background: #131417;
+}
