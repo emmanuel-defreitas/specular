@@ -11,6 +11,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@ambientcss/css": "^3.1.0",
     "@exegia/specular": "file:..",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

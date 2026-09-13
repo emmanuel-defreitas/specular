@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { test } from "node:test"
 
-import { defineSurfaces, resolveSurfaces } from "./index.ts"
+import { defineSurfaces, litVars, resolveSurfaces } from "./index.ts"
 
 test("rejects core roots unless allowCoreCollision", () => {
   for (const name of ["shadow", "inset-shadow", "ring", "inset-ring", "blur", "drop-shadow", "text-shadow", "outline"])
@@ -24,4 +24,9 @@ test("resolves defaults: first layer white, later black, px for numbers", () => 
   assert.equal(s?.darkSelector, ".dark")
   assert.deepEqual(s?.layers.map((l) => [l.color, l.y, l.blur, l.alpha]), [["#fff", "2px", "0", "100"], ["#000", "-1px", "0.5rem", "15"]])
   assert.deepEqual(s?.layers[1]?.dark, { y: "-8px" })
+})
+
+test("litVars: bearing 0 lights the top edge, 90 the right edge", () => {
+  assert.deepEqual(litVars(0, 2.5, "card"), { "--tw-card-lit-x": "0.00px", "--tw-card-lit-y": "2.50px" })
+  assert.deepEqual(litVars(90, 2.5, "card"), { "--tw-card-lit-x": "-2.50px", "--tw-card-lit-y": "0.00px" })
 })

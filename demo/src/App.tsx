@@ -1,19 +1,18 @@
+import { litVars } from "@exegia/specular"
 import { Rim, usePointerLight } from "@exegia/specular/react"
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 
 import { cn } from "./lib/cn.ts"
 
-type LitVars = CSSProperties & Record<`--tw-${string}-lit-x` | `--tw-${string}-lit-y`, string>
+type Preset = "card" | "raised"
 
-/** Bearing 0 = 12 o'clock. The offset (-sin, +cos) exposes the band facing the pointer. */
-function litVars(angle: number, depth = 2.5, surface = "card"): LitVars {
-  const rad = (angle * Math.PI) / 180
-  const vars: Record<string, string> = {
-    [`--tw-${surface}-lit-x`]: `${(-Math.sin(rad) * depth).toFixed(2)}px`,
-    [`--tw-${surface}-lit-y`]: `${(Math.cos(rad) * depth).toFixed(2)}px`,
-  }
-  return vars as LitVars
-}
+/** Literal class strings — Tailwind's scanner can't see interpolated names. */
+const BASE_CLASS: Record<Preset, string> = { card: "card-base", raised: "raised-base" }
+
+/** Follow speed. 1 = the shadow snaps to the cursor; smaller = heavier.
+ *  (The `mouse · 0.4` knob — every eased frame moves this fraction of the
+ *  remaining distance, then keeps easing after the pointer stops.) */
+const FOLLOW_DAMPING = 0.4
 
 /** `.dark` on <html>; the plugin's dark presets land under the same class. */
 function useTheme(): [boolean, () => void] {
@@ -22,6 +21,26 @@ function useTheme(): [boolean, () => void] {
     document.documentElement.classList.toggle("dark", dark)
   }, [dark])
   return [dark, () => setDark((d) => !d)]
+}
+
+/** Ambient CSS reads --amb-light-x/y in -1..1; a bearing becomes a unit vector. */
+function ambLightVars(angle: number) {
+  const rad = (angle * Math.PI) / 180
+  return {
+    "--amb-light-x": Math.sin(rad).toFixed(2),
+    "--amb-light-y": (-Math.cos(rad)).toFixed(2),
+  } as CSSProperties
+}
+
+/** Ambient CSS surface that re-aims the scene light at the pointer. */
+function AmbLit({ children, className }: { children: ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const angle = usePointerLight(ref, { damping: FOLLOW_DAMPING })
+  return (
+    <div ref={ref} style={ambLightVars(angle)} className={className}>
+      {children}
+    </div>
+  )
 }
 
 function ThemeToggle({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
@@ -40,14 +59,14 @@ function ThemeToggle({ dark, onToggle }: { dark: boolean; onToggle: () => void }
 }
 
 /** A card whose emboss itself turns toward the cursor. */
-function LitCard({ children, depth, className }: { children: ReactNode; depth?: number; className?: string }) {
+function LitCard({ children, depth, className, surface = "card" }: { children: ReactNode; depth?: number; className?: string; surface?: Preset }) {
   const ref = useRef<HTMLDivElement>(null)
-  const angle = usePointerLight(ref)
+  const angle = usePointerLight(ref, { damping: FOLLOW_DAMPING })
   return (
     <div
       ref={ref}
-      style={litVars(angle, depth)}
-      className={cn("rounded-xl bg-stone-200 p-5 card-base dark:bg-neutral-800/50 drop-shadow-[0px_0px_1px_rgba(0,0,0,0.1)]", className)}
+      style={litVars(angle, depth, surface)}
+      className={cn("rounded-xl bg-stone-200 p-5 dark:bg-neutral-800/50", BASE_CLASS[surface], className)}
     >
       {children}
     </div>
@@ -55,14 +74,14 @@ function LitCard({ children, depth, className }: { children: ReactNode; depth?: 
 }
 
 /** A list row: same math, horizontal layout, its own light. */
-function LitRow({ hue, initials, title, preview, time }: { hue: number; initials: string; title: string; preview: string; time: string }) {
+function LitRow({ hue, initials, title, preview, time, surface = "card" }: { hue: number; initials: string; title: string; preview: string; time: string; surface?: Preset }) {
   const ref = useRef<HTMLDivElement>(null)
-  const angle = usePointerLight(ref)
+  const angle = usePointerLight(ref, { damping: FOLLOW_DAMPING })
   return (
     <div
       ref={ref}
-      style={litVars(angle, 1.2)}
-      className="flex items-center gap-4 rounded-xl bg-stone-200 px-4 py-3 card-base dark:bg-neutral-800/50 drop-shadow-xs"
+      style={litVars(angle, 1.2, surface)}
+      className={cn("flex items-center gap-4 rounded-xl bg-stone-200 px-4 py-3 dark:bg-neutral-800/50", BASE_CLASS[surface])}
     >
       <span
         className="flex size-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold round-base"
@@ -82,7 +101,7 @@ function LitRow({ hue, initials, title, preview, time }: { hue: number; initials
 /** Rim disc: highlight sweep rotates toward the pointer, no re-render. */
 function RimTile({ hue, initials, size = 20 }: { hue: number; initials: string; size?: 10 | 12 | 16 | 20 }) {
   const ref = useRef<HTMLSpanElement>(null)
-  usePointerLight(ref, { mode: "var" })
+  usePointerLight(ref, { mode: "var", damping: FOLLOW_DAMPING })
   return (
     <span
       ref={ref}
@@ -101,7 +120,7 @@ function RimTile({ hue, initials, size = 20 }: { hue: number; initials: string; 
 /** A nav pill: the small bezel follows the cursor with a shallower depth. */
 function LitNav({ label }: { label: string }) {
   const ref = useRef<HTMLButtonElement>(null)
-  const angle = usePointerLight(ref)
+  const angle = usePointerLight(ref, { damping: FOLLOW_DAMPING })
   return (
     <button
       ref={ref}
@@ -159,8 +178,34 @@ const CARD_TILES = [
   { title: "Exposure", hue: 320, initials: "s", value: "250" },
 ] as const
 
+/** Copy/paste-ready surface presets. Both expose the same `lit` layer, so
+ * components switch by surface name only. */
+const PRESETS = {
+  card: `// flat — hairline light, ring, micro drop
+import { defineSurfaces } from "@exegia/specular"
+export const surfaces = defineSurfaces({
+  card: { layers: {
+    lit: { inset: true, color: "#fff", y: 1, blur: 1, alpha: 70 },
+    ring: { inset: false, color: "#000", blur: 0, spread: 0.2, alpha: 14 },
+    drop: { inset: false, color: "#000", y: 4, blur: 2, alpha: 4 },
+  }},
+})`,
+  raised: `// raised — same hairline + stacked contact/penumbra/umbra
+import { defineSurfaces } from "@exegia/specular"
+export const surfaces = defineSurfaces({
+  card: { layers: {
+    lit:      { inset: true,  color: "#fff", y: 1,  blur: 1,  alpha: 70 },
+    ring:     { inset: false, color: "#000", blur: 0,  spread: 0.2, alpha: 14 },
+    contact:  { inset: false, color: "#000", y: 2,  blur: 3,  alpha: 8 },
+    penumbra: { inset: false, color: "#000", y: 5,  blur: 10, alpha: 5 },
+    umbra:    { inset: false, color: "#000", y: 12, blur: 24, alpha: 4 },
+  }},
+})`,
+}
+
 export function App() {
   const [dark, toggleTheme] = useTheme()
+  const [preset, setPreset] = useState<"card" | "raised">("card")
   return (
     <main className="relative mx-auto grid max-w-4xl gap-14 px-6 py-16">
       <header className="grid gap-3">
@@ -181,13 +226,33 @@ export function App() {
       </section>
 
       <section className="grid gap-6">
-        <h2 className="text-xl font-semibold text-stone-900 dark:text-white">A page lit from everywhere</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-xl font-semibold text-stone-900 dark:text-white">A page lit from everywhere</h2>
+          <div className="inline-flex gap-1 rounded-xl bg-stone-300/70 p-1 dark:bg-neutral-900">
+            {(["card", "raised"] as const).map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPreset(p)}
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-sm font-medium capitalize transition-shadow duration-150",
+                  preset === p
+                    ? "bg-stone-100 text-stone-900 bezel-base dark:bg-neutral-700 dark:text-white"
+                    : "text-stone-600 hover:text-stone-900 dark:text-neutral-400"
+                )}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
         <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
           One window listener, one rAF per frame for the whole page. Every card, row, pill and avatar below derives its
           light direction from the same pointer bearing.
         </p>
+        <Snippet>{PRESETS[preset]}</Snippet>
 
-        <div className="grid gap-8 rounded-3xl bg-stone-200/50 p-6 sm:p-8 dark:bg-neutral-900/50">
+        <div className="grid gap-8 rounded-3xl bg-stone-200/50 p-6 sm:p-8 dark:bg-stone-900/50">
           <div className="flex flex-wrap items-center gap-3">
             <RimTile hue={40} initials="◆" size={12} />
             <nav className="flex flex-wrap gap-2">
@@ -204,7 +269,7 @@ export function App() {
 
           <div className="grid gap-5 sm:grid-cols-3">
             {CARD_TILES.map(({ title, hue, initials, value }) => (
-              <LitCard key={title} depth={1.2}>
+              <LitCard key={title} depth={1.2} surface={preset}>
                 <div className="flex items-center justify-between">
                   <RimTile hue={hue} initials={initials} size={10} />
                   <span className="font-mono text-xs text-stone-400 dark:text-neutral-500">{value}</span>
@@ -217,7 +282,7 @@ export function App() {
 
           <div className="grid gap-2">
             {ROWS.map((row) => (
-              <LitRow key={row.title} {...row} />
+              <LitRow key={row.title} {...row} surface={preset} />
             ))}
           </div>
 
@@ -232,6 +297,46 @@ export function App() {
               </div>
             </div>
           </LitCard>
+        </div>
+      </section>
+
+      <section className="grid gap-6">
+        <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <h2 className="text-xl font-semibold text-stone-900 dark:text-white">Same cursor, Ambient CSS</h2>
+          <code className="w-fit rounded-full bg-stone-200 px-3 py-1 font-mono text-[11px] text-stone-600 bezel-base dark:bg-neutral-800 dark:text-neutral-400">
+            --amb-light-x/y ← usePointerLight
+          </code>
+        </div>
+
+        <div className="amb-scene grid gap-8 rounded-[2rem] p-8 sm:p-12 dark:bg-stone-900/50 bg-stone-200/50">
+          <div className="grid items-center gap-8 sm:grid-cols-3">
+            <AmbLit className="ambient amb-surface amb-chamfer amb-elevation amb-rounded-lg grid h-28 place-items-center text-sm font-medium">
+              <span style={{ color: "var(--amb-label)" }}>flat · chamfer</span>
+            </AmbLit>
+            <AmbLit className="ambient amb-surface-concave amb-fillet amb-elevation amb-rounded-lg grid h-28 place-items-center text-sm font-medium">
+              <span style={{ color: "var(--amb-label)" }}>concave · fillet</span>
+            </AmbLit>
+            <AmbLit className="ambient amb-surface-convex amb-chamfer amb-elevation amb-rounded-full mx-auto grid size-28 place-items-center text-sm font-semibold">
+              <span style={{ color: "var(--amb-label)" }}>convex</span>
+            </AmbLit>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            {["Play", "Stop", "Rec"].map((label) => (
+              <AmbLit key={label} className="ambient amb-surface-convex amb-chamfer amb-elevation amb-rounded-md">
+                <button
+                  type="button"
+                  className="grid h-11 w-24 cursor-pointer place-items-center text-sm font-semibold select-none"
+                  style={{ color: "var(--amb-label)" }}
+                >
+                  {label}
+                </button>
+              </AmbLit>
+            ))}
+            <AmbLit className="ambient amb-surface-concave amb-groove amb-rounded-md">
+              <div className="grid h-11 w-44 place-items-center font-mono text-xs text-stone-500">groove track</div>
+            </AmbLit>
+            <span className="ml-auto font-mono text-xs text-stone-500">albedo lab(92.6%) · hue 234 · key .9 · fill .7</span>
+          </div>
         </div>
       </section>
 
