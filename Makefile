@@ -6,7 +6,8 @@ SHELL         := /bin/bash
 
 DIST_DIR      ?= dist-pack
 
-.PHONY: help install build test lint smoke clean example-install example-build example-dev
+.PHONY: help install build test lint smoke clean lab-dev demo-install demo-build demo-dev \
+        example-install example-build example-dev
 
 help: ## Show this help message.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort \
@@ -40,6 +41,18 @@ clean: ## Remove build products.
 # checkout, so the root must be built before the example can compile.
 
 EXAMPLE_DIR   ?= examples/vite-react
+
+demo-install: ## Install the demo app's dependencies.
+	@cd demo && npm install
+
+demo-build: build demo-install ## Typecheck and build the demo app against the local library.
+	@cd demo && npm run --silent build
+
+demo-dev: build demo-install ## Build the library, then start the demo's Vite dev server.
+	@cd demo && npm run dev
+
+lab-dev: ## Start the lab01-ui experiments app on :5174.
+	@cd lab01-ui && npm run dev -- --port 5174 --strictPort
 
 example-install: ## Install the example app's dependencies from its lockfile.
 	@cd $(EXAMPLE_DIR) && npm ci
