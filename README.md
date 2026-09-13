@@ -243,6 +243,13 @@ make example-dev       # build the library, install the example, start Vite
 make example-build     # production build, what CI runs
 ```
 
+A focused `demo/` app shows just the apply steps and the hover behaviour
+(cards lift, glow buttons, press sink, pointer-following light and rims):
+
+```bash
+make demo-dev          # build the library, install the demo, start Vite
+```
+
 See [`examples/vite-react/README.md`](examples/vite-react/README.md) for what
 each section shows.
 

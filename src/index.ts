@@ -85,6 +85,28 @@ export function defineSurfaces<const T extends Surfaces>(surfaces: T): T {
   return surfaces
 }
 
+// ── Pointer-follow helper ─────────────────────────────────────────────────────
+
+/** Instance-tier custom properties `litVars()` writes: `--tw-{surface}-lit-x/y`. */
+export type LitVars = { [k: `--tw-${string}-lit-x`]: string } & { [k: `--tw-${string}-lit-y`]: string }
+
+/**
+ * Instance-tier vars that turn a surface's lit edge toward a pointer bearing.
+ *
+ * Bearing 0 = 12 o'clock, clockwise. The offset is (-sin, +cos) · depth: an
+ * inset layer offset exposes the band OPPOSITE the offset, so a bearing of 0
+ * (cursor above) writes (−0, +depth) — the top edge lights up. Pair with
+ * `usePointerLight(ref)` and spread into `style`. `surface` must match the
+ * surface name in your `defineSurfaces` config.
+ */
+export function litVars(angle: number, depth = 2.5, surface = "card"): LitVars {
+  const rad = (angle * Math.PI) / 180
+  return {
+    [`--tw-${surface}-lit-x`]: `${(-Math.sin(rad) * depth).toFixed(2)}px`,
+    [`--tw-${surface}-lit-y`]: `${(Math.cos(rad) * depth).toFixed(2)}px`,
+  }
+}
+
 // ── Resolved model, shared by plugin and merge ────────────────────────────────
 
 export type ResolvedLayer = {
