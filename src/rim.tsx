@@ -31,7 +31,7 @@ const GRADIENT =
   "conic-gradient(from 180deg, var(--rim-lo) 0%, transparent 24%, transparent 28%, var(--rim-hi) 50%, transparent 72%, transparent 76%, var(--rim-lo) 100%)"
 const MASK = "radial-gradient(farthest-side, transparent 78%, #000 92%)"
 /** transitions.dev `--duration-quick` / `--ease-smooth-out`. */
-export const RIM_TRANSITION = "transform 150ms cubic-bezier(0.22, 1, 0.36, 1)"
+export const RIM_TRANSITION = "transform 350ms cubic-bezier(0.22, 1, 0.36, 1)"
 
 export function Rim({ angle = 0, hi, lo, style, ...rest }: RimProps) {
   const reduce = useReducedMotion()
