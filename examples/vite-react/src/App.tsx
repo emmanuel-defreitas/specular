@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { ThemeToggle, useTheme } from "./components/ThemeToggle.tsx"
 import { Alive } from "./sections/Alive.tsx"
@@ -23,6 +23,19 @@ const NAV = [
 export function App() {
   const [dark, toggle] = useTheme()
   const [active, setActive] = useState<string>()
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
+  const closeTimer = useRef<number | undefined>(undefined)
+
+  function openProfile() {
+    window.clearTimeout(closeTimer.current)
+    setProfileOpen(true)
+  }
+
+  function closeProfileLater() {
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = window.setTimeout(() => setProfileOpen(false), 3000)
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -34,6 +47,17 @@ export function App() {
     )
     NAV.forEach(([id]) => observer.observe(document.getElementById(id)!))
     return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    function closeOnOutsidePointer(event: PointerEvent) {
+      if (!profileRef.current?.contains(event.target as Node)) setProfileOpen(false)
+    }
+    document.addEventListener("pointerdown", closeOnOutsidePointer)
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer)
+      window.clearTimeout(closeTimer.current)
+    }
   }, [])
 
   return (
@@ -57,15 +81,17 @@ export function App() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-4">
-            <div className="group relative">
+            <div ref={profileRef} className="relative" onMouseEnter={openProfile} onMouseLeave={closeProfileLater} onFocusCapture={openProfile} onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node)) closeProfileLater()
+            }}>
               <a
                 href="https://github.com/emmanuel-defreitas"
                 className="flex items-center gap-2 rounded-full bg-stone-200 py-1 pr-3 pl-1 text-sm font-medium text-stone-700 bezel-base transition-[box-shadow,transform,color] duration-150 hover:-translate-y-px hover:text-stone-950 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:text-white"
               >
                 <img className="size-6 rounded-full" src="https://github.com/emmanuel-defreitas.png?size=48" alt="" />
-                emmanuel-defreitas
+                @emmanuel-defreitas
               </a>
-              <div className="pointer-events-none invisible absolute top-full right-0 mt-2 w-60 rounded-xl border border-stone-300/70 bg-stone-100 p-3 text-sm opacity-0 shadow-xl transition-[opacity,transform,visibility] duration-150 group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-1 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-1 group-focus-within:opacity-100 dark:border-neutral-700 dark:bg-neutral-900">
+              <div className={`absolute top-full right-0 mt-2 w-60 rounded-xl border border-stone-300/70 bg-stone-100 p-3 text-sm shadow-xl transition-[opacity,transform,visibility] duration-150 dark:border-neutral-700 dark:bg-neutral-900 ${profileOpen ? "visible pointer-events-auto translate-y-1 opacity-100" : "pointer-events-none invisible opacity-0"}`}>
                 <p className="font-medium text-stone-900 dark:text-white">Specular by Emmanuel Defreitas</p>
                 <p className="mt-1 text-xs leading-relaxed text-stone-600 dark:text-neutral-400">Tailwind v4 lighting utilities and pointer-following React rims.</p>
                 <div className="mt-3 flex gap-3 text-xs font-medium">
