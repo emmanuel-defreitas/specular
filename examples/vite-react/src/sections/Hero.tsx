@@ -46,7 +46,14 @@ export function Hero() {
             See it come alive
           </a>
         </div>
-        <Code className="mt-8">{`
+        <div className="mt-8 grid gap-4">
+          <div className="grid gap-2">
+            <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">1. Install</p>
+            <Code>{`bun add @exegia/specular`}</Code>
+          </div>
+          <div className="grid gap-2">
+            <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">2. Usage</p>
+            <Code>{`
 import { Rim, usePointerLight } from "@exegia/specular/react"
 
 function Orb() {
@@ -58,6 +65,8 @@ function Orb() {
     </div>
   )
 }`}</Code>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col items-center gap-10">
         <Orb />

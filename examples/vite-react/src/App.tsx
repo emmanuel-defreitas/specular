@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+
 import { ThemeToggle, useTheme } from "./components/ThemeToggle.tsx"
 import { Alive } from "./sections/Alive.tsx"
 import { Basics } from "./sections/Basics.tsx"
@@ -20,6 +22,20 @@ const NAV = [
 
 export function App() {
   const [dark, toggle] = useTheme()
+  const [active, setActive] = useState<string>()
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const current = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+        if (current) setActive(current.target.id)
+      },
+      { rootMargin: "-20% 0px -65%", threshold: [0, 0.1, 0.5] }
+    )
+    NAV.forEach(([id]) => observer.observe(document.getElementById(id)!))
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <>
       <header className="sticky top-0 z-10 border-b border-stone-300/60 bg-stone-100/80 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/80">
@@ -30,18 +46,34 @@ export function App() {
           </a>
           <nav className="hidden gap-1 text-sm text-stone-600 md:flex dark:text-neutral-400">
             {NAV.map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="rounded-md px-2.5 py-1 transition-colors hover:bg-stone-200 hover:text-stone-900 dark:hover:bg-neutral-800 dark:hover:text-white">
+              <a
+                key={id}
+                href={`#${id}`}
+                aria-current={active === id ? "page" : undefined}
+                className={`rounded-md px-2.5 py-1 transition-[background-color,color,box-shadow] duration-150 hover:bg-stone-200 hover:text-stone-900 dark:hover:bg-neutral-800 dark:hover:text-white ${active === id ? "bg-stone-200 text-stone-900 bezel-base dark:bg-neutral-800 dark:text-white" : ""}`}
+              >
                 {label}
               </a>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-4">
-            <a
-              href="https://github.com/emmanuel-defreitas/specular"
-              className="text-sm text-stone-600 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-white"
-            >
-              GitHub
-            </a>
+            <div className="group relative">
+              <a
+                href="https://github.com/emmanuel-defreitas"
+                className="flex items-center gap-2 rounded-full bg-stone-200 py-1 pr-3 pl-1 text-sm font-medium text-stone-700 bezel-base transition-[box-shadow,transform,color] duration-150 hover:-translate-y-px hover:text-stone-950 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:text-white"
+              >
+                <img className="size-6 rounded-full" src="https://github.com/emmanuel-defreitas.png?size=48" alt="" />
+                emmanuel-defreitas
+              </a>
+              <div className="pointer-events-none invisible absolute top-full right-0 mt-2 w-60 rounded-xl border border-stone-300/70 bg-stone-100 p-3 text-sm opacity-0 shadow-xl transition-[opacity,transform,visibility] duration-150 group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-1 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-1 group-focus-within:opacity-100 dark:border-neutral-700 dark:bg-neutral-900">
+                <p className="font-medium text-stone-900 dark:text-white">Specular by Emmanuel Defreitas</p>
+                <p className="mt-1 text-xs leading-relaxed text-stone-600 dark:text-neutral-400">Tailwind v4 lighting utilities and pointer-following React rims.</p>
+                <div className="mt-3 flex gap-3 text-xs font-medium">
+                  <a href="https://github.com/emmanuel-defreitas" className="text-stone-700 hover:text-stone-950 dark:text-neutral-300 dark:hover:text-white">Profile</a>
+                  <a href="https://github.com/emmanuel-defreitas/specular" className="text-stone-700 hover:text-stone-950 dark:text-neutral-300 dark:hover:text-white">Repository</a>
+                </div>
+              </div>
+            </div>
             <ThemeToggle dark={dark} onToggle={toggle} />
           </div>
         </div>
