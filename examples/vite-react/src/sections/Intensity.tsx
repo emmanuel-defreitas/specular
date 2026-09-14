@@ -123,7 +123,7 @@ export function Intensity() {
 <div class="bezel-lit-blur-0" /> <div class="bezel-lit-blur-2" /> <div class="bezel-lit-blur-6" /> <div class="bezel-lit-blur-12" />
 <div class="bezel-blur-8" />     <!-- every layer -->`}
       >
-        <div className="flex flex-wrap items-start justify-around gap-6">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:flex-wrap md:items-start md:justify-around">
           <Swatch classes="bezel-lit-blur-0" shape="size-20 rounded-2xl" />
           <Swatch classes="bezel-lit-blur-2" shape="size-20 rounded-2xl" />
           <Swatch classes="bezel-lit-blur-6" shape="size-20 rounded-2xl" />
