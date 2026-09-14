@@ -1,0 +1,68 @@
+# Publish the example showcase (examples/vite-react) to GitHub Pages on every
+# merge into dev and main, so the demo always matches the latest library.
+#
+# Pages itself is provisioned on first run (or Settings → Pages): this
+# workflow enables it against the `github-pages` deployment branch with
+# actions/configure-pages when the site does not exist yet.
+#
+# The site deploys from the merge commit on `dev` — the same tree CI already
+# tested on the PR, so nothing is re-run here beyond the build itself.
+name: Deploy examples to GitHub Pages
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      - "examples/**"
+      - "src/**"
+      - "demo/**"
+      - "package.json"
+      - "bun.lock"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: ./.github/actions/setup
+
+      # The example pins npm with a package-lock.json (bun can't resolve
+      # file:../.. through a space in the path), so it installs separately
+      # from the root's bun.lock.
+      - name: Build library and example
+        run: |
+          make build
+          cd examples/vite-react
+          npm ci
+          npm run --silent build -- --base=/${{ github.event.repository.name }}/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@98ef48e41587a300b82de4cf298aa98b57b2faae # v5.0.0
+        with:
+          path: examples/vite-react/dist
+
+  deploy:
+    name: deploy
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # First run also enables Pages against this deployment branch.
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
