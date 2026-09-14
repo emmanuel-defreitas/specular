@@ -3,11 +3,11 @@ import { Section } from "../components/Section.tsx"
 import { Swatch } from "../components/Swatch.tsx"
 
 const GLOWS = [
-  { name: "rose", cls: "bg-rose-500 glow-halo-color-rose-500" },
+  { name: "rose", cls: "bg-rose-500 text-white glow-halo-color-rose-500" },
   { name: "amber", cls: "bg-amber-400 text-amber-950 glow-halo-color-amber-400" },
-  { name: "emerald", cls: "bg-emerald-500 glow-halo-color-emerald-500" },
-  { name: "sky", cls: "bg-sky-500 glow-halo-color-sky-500" },
-  { name: "violet", cls: "bg-violet-500 glow-halo-color-violet-500" },
+  { name: "emerald", cls: "bg-emerald-500 text-white glow-halo-color-emerald-500" },
+  { name: "sky", cls: "bg-sky-500 text-white glow-halo-color-sky-500" },
+  { name: "violet", cls: "bg-violet-500 text-white glow-halo-color-violet-500" },
   { name: "white", cls: "bg-neutral-100 text-neutral-900 glow-halo-color-white" },
 ]
 
@@ -81,7 +81,7 @@ export function Colors() {
             <button
               key={g.name}
               type="button"
-              className={`h-11 rounded-full px-6 text-sm font-semibold text-white glow-base transition-shadow duration-300 hover:glow-halo/75 ${g.cls}`}
+              className={`h-11 rounded-full px-6 text-sm font-semibold glow-base transition-shadow duration-300 hover:glow-halo/75 ${g.cls}`}
             >
               {g.name}
             </button>

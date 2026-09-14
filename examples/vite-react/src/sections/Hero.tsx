@@ -28,6 +28,7 @@ export function Hero() {
     <section id="top" className="grid items-center gap-12 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
       <div className="max-w-xl">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-stone-200 px-3 py-1 font-mono text-[11px] text-stone-600 bezel-base dark:bg-neutral-800 dark:text-neutral-400">
+          <img className="size-3 dark:invert" src="https://github.githubassets.com/favicons/favicon.svg" alt="" />
           @exegia/specular · Tailwind v4 · React 19
         </div>
         <h1 className="text-5xl font-semibold tracking-tight text-stone-900 sm:text-6xl dark:text-white">
@@ -46,7 +47,14 @@ export function Hero() {
             See it come alive
           </a>
         </div>
-        <Code className="mt-8">{`
+        <div className="mt-8 grid gap-4">
+          <div className="grid gap-2">
+            <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">1. Install</p>
+            <Code>{`bun add @exegia/specular`}</Code>
+          </div>
+          <div className="grid gap-2">
+            <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">2. Usage</p>
+            <Code>{`
 import { Rim, usePointerLight } from "@exegia/specular/react"
 
 function Orb() {
@@ -58,6 +66,8 @@ function Orb() {
     </div>
   )
 }`}</Code>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col items-center gap-10">
         <Orb />
