@@ -8,9 +8,11 @@ import { Direction } from "./sections/Direction.tsx"
 import { Hero } from "./sections/Hero.tsx"
 import { Intensity } from "./sections/Intensity.tsx"
 import { Merge } from "./sections/Merge.tsx"
+import { Setup } from "./sections/Setup.tsx"
 import { Tone } from "./sections/Tone.tsx"
 
 const NAV = [
+  ["setup", "Setup"],
   ["basics", "Surfaces"],
   ["direction", "Direction"],
   ["intensity", "Intensity"],
@@ -62,13 +64,13 @@ export function App() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 border-b border-stone-300/60 bg-stone-100/80 backdrop-blur dark:border-neutral-800 dark:bg-neutral-950/80">
+      <header className="sticky top-0 z-10 border-b border-stone-300/60 bg-stone-100/80 backdrop-blur dark:border-neutral-700 dark:bg-neutral-900/80">
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
           <a href="#top" className="flex items-center gap-2.5 font-semibold text-stone-900 dark:text-white">
             <span className="size-5 rounded-full bg-stone-300 bezel-base dark:bg-neutral-700" aria-hidden="true" />
             specular
           </a>
-          <nav className="hidden gap-1 text-sm text-stone-600 md:flex dark:text-neutral-400">
+          <nav className="hidden gap-1 text-sm text-stone-600 xl:flex dark:text-neutral-400">
             {NAV.map(([id, label]) => (
               <a
                 key={id}
@@ -106,6 +108,7 @@ export function App() {
       </header>
       <main className="mx-auto max-w-6xl px-6">
         <Hero />
+        <Setup />
         <Basics />
         <Direction />
         <Intensity />
@@ -115,7 +118,7 @@ export function App() {
         <Merge />
       </main>
       <footer className="border-t border-stone-300/60 py-10 text-center text-xs text-stone-500 dark:border-neutral-800 dark:text-neutral-500">
-        @exegia/specular · MIT · every surface on this page is a <code className="font-mono">box-shadow</code>
+        @exegia/specular · MIT · Tailwind bezels and React rim overlays
       </footer>
     </>
   )

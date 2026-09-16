@@ -1,6 +1,7 @@
 "use client"
 
 import { Rim, usePointerLight } from "@exegia/specular/react"
+import { Star } from "lucide-react"
 import { useRef } from "react"
 
 import { Code } from "../components/Code.tsx"
@@ -40,11 +41,20 @@ export function Hero() {
           around this page: every disc, button and card is lit by the same two ideas.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <a href="#basics" className="btn">
-            Start with a bezel
+          <a href="#setup" className="btn">
+            Install & set up
           </a>
           <a href="#alive" className="btn bg-stone-800 text-white bezel-lit/25 bezel-dim/40 dark:bg-white dark:text-neutral-900 dark:bezel-lit/60">
             See it come alive
+          </a>
+          <a
+            href="https://github.com/emmanuel-defreitas/specular"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn gap-2"
+          >
+            <Star className="size-4" aria-hidden="true" />
+            Star on GitHub
           </a>
         </div>
         <div className="mt-8 grid gap-4">
@@ -53,16 +63,19 @@ export function Hero() {
             <Code>{`bun add @exegia/specular`}</Code>
           </div>
           <div className="grid gap-2">
-            <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">2. Usage</p>
+            <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">React quick start · no Specular plugin needed</p>
             <Code>{`
+"use client"
+
+import { useRef } from "react"
 import { Rim, usePointerLight } from "@exegia/specular/react"
 
 function Orb() {
   const ref = useRef<HTMLDivElement>(null)
   const angle = usePointerLight(ref)            // 0 = 12 o'clock, clockwise
   return (
-    <div ref={ref} className="relative size-44 rounded-full bezel-base">
-      <Rim angle={angle * 0.8} className="rounded-full" />
+    <div ref={ref} className="relative size-44 rounded-full bg-stone-300">
+      <Rim angle={angle} className="rounded-full" />
     </div>
   )
 }`}</Code>
@@ -86,8 +99,7 @@ function Orb() {
           </LitAvatar>
         </div>
         <p className="max-w-xs text-center text-xs text-stone-500 dark:text-neutral-500">
-          Same hook, four dampings. <code className="font-mono">angle * 1</code> points straight at the cursor; smaller factors lag behind it, which reads as
-          weight.
+          Same hook, four angle scales. <code className="font-mono">angle * 1</code> points straight at the cursor; smaller factors reduce rotation. For gradual tracking, use the hook’s damping option.
         </p>
       </div>
     </section>
