@@ -66,6 +66,16 @@ export function Alive() {
         </>
       }
     >
+      <div className="max-w-2xl space-y-3 text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+        <p><strong className="text-stone-900 dark:text-white">Rim draws; usePointerLight moves.</strong> The hook returns an angle and renders nothing.
+          Pass it to Rim for an overlay, or to litVars(angle, 2.5, "bezel") from @exegia/specular for inset lighting on a configured lit layer.</p>
+        <p>A rim needs a positioned parent and a border radius. It does not require the Specular plugin; an inset bezel does.
+          Render Rim without an angle for a static effect. Use usePointerLight(ref, {'{ damping: 0.4 }'}) for gradual tracking; the default is 1.</p>
+        <p>Rim accepts hi and lo overrides from 0 to 1. Defaults are 1 and 0.2; the plugin supplies 0.18 and 0.4 under .dark.
+          Without the plugin, set those props or the CSS variables --rim-hi-a and --rim-lo-a yourself for theme-specific strengths.</p>
+        <p>useReducedMotion() is also exported for your own effects. The pointer hook already stops tracking under reduced motion,
+          and Rim disables its transition. In React Server Component apps, put hook usage in a “use client” file.</p>
+      </div>
       <Demo
         title="Hover: the card lifts"
         description="A raised card whose drop layer grows deeper, softer and darker under the cursor. Nothing but hover: utilities and transition-shadow."
@@ -164,10 +174,13 @@ const style = {
           </>
         }
         code={`
-<span ref={ref} className="relative size-16 rounded-full overflow-hidden bezel-base">
-  <img src={src} className="size-full rounded-full object-cover" />
-  <Rim angle={angle * 0.8} className="rounded-full" />
-</span>`}
+const ref = useRef<HTMLDivElement>(null)
+const angle = usePointerLight(ref)
+
+<div ref={ref} className="relative size-16 rounded-full">
+  <img src={src} alt="" className="size-full rounded-full object-cover" />
+  <Rim angle={angle} className="rounded-full" />
+</div>`}
       >
         <div className="flex flex-wrap items-center justify-around gap-8">
           {[

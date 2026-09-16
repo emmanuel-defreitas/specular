@@ -41,6 +41,14 @@ export function Tone() {
         </>
       }
     >
+      <div className="max-w-2xl space-y-3 text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+        <p>These helpers are optional and come from @exegia/specular/react. Neither Rim nor pointer tracking needs image sampling.</p>
+        <p>useRimTone(src) returns brightness as React state. For manual measurement, use await measureRimTone(src) instead of the hook.
+          Both return null when sampling is unavailable, including when a remote image host does not allow CORS. The image can still display.</p>
+        <p>toneToAlphas(tone) converts brightness to hi and lo props: 0.7 / 0.6 for a dark edge, 1 / 0.2 for a light edge,
+          interpolated in between. Pass custom endpoints as its second argument if needed. Explicit props override theme tokens;
+          while tone is null, the example keeps the rim defaults.</p>
+      </div>
       <Demo
         title="Fixed alphas versus measured"
         description="Top row: the rim at its baked-in alphas. Bottom row: the same images with tone sampling. Watch the night and snow images in particular."
