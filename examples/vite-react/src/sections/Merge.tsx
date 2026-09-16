@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 
+import { Code } from "../components/Code.tsx"
 import { Demo } from "../components/Demo.tsx"
 import { Section } from "../components/Section.tsx"
 import { cn } from "../lib/cn.ts"
@@ -89,6 +90,23 @@ export function Merge() {
         </>
       }
     >
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-stone-900 dark:text-white">Optional: set up your cn() once</h3>
+        <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+          Install tailwind-merge@^3, then pass the same surfaces used by your plugin. createCn(surfaces) requires that argument;
+          there is no default preset or separate options object. Static className strings do not need this step.
+        </p>
+        <Code>{`// src/lib/cn.ts
+import { createCn } from "@exegia/specular/merge"
+import { surfaces } from "../../specular.config.ts"
+
+export const cn = createCn(surfaces)`}</Code>
+        <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+          Already customizing tailwind-merge? Use extendTailwindMerge(mergeConfig(surfaces)) instead. mergeConfig returns configuration;
+          createCn returns the ready helper. Both handle normal Tailwind classes too. The helper accepts strings, arrays, and falsy
+          values; run clsx first if you use object syntax. Neither function generates CSS.
+        </p>
+      </div>
       <Demo
         title="Try it"
         description="Two class strings go in; the stock merge and the generated one come out. Struck-through classes were dropped."
