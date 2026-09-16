@@ -1,8 +1,15 @@
+import { useState } from "react"
+
 import { Demo } from "../components/Demo.tsx"
 import { Section } from "../components/Section.tsx"
 import { Swatch } from "../components/Swatch.tsx"
 
 export function Basics() {
+  const [action, setAction] = useState("Primary")
+  const [period, setPeriod] = useState("Week")
+  const [count, setCount] = useState(0)
+  const [intensity, setIntensity] = useState(60)
+
   return (
     <Section
       id="basics"
@@ -61,29 +68,31 @@ export function Basics() {
           <div className="flex flex-col gap-4">
             <div className="text-xs font-medium tracking-wide text-stone-500 uppercase dark:text-neutral-500">bezel · press me</div>
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="btn">
+              <button type="button" onClick={() => setAction("Default")} aria-pressed={action === "Default"} className={`btn transition-[box-shadow,transform,ring] duration-150 active:translate-y-px ${action === "Default" ? "ring-2 ring-stone-400/70 dark:ring-neutral-500" : ""}`}>
                 Default
               </button>
-              <button type="button" className="btn bg-stone-800 text-white bezel-lit/25 bezel-dim/40 dark:bg-white dark:text-neutral-900 dark:bezel-lit/60">
+              <button type="button" onClick={() => setAction("Primary")} aria-pressed={action === "Primary"} className={`btn bg-stone-800 text-white bezel-lit/25 bezel-dim/40 transition-[box-shadow,transform,ring] duration-150 active:translate-y-px dark:bg-white dark:text-neutral-900 dark:bezel-lit/60 ${action === "Primary" ? "ring-2 ring-sky-400/70" : ""}`}>
                 Primary
               </button>
-              <button type="button" className="btn bg-emerald-500 text-white bezel-lit/50 bezel-dim/30 bezel-dim-color-emerald-950">
+              <button type="button" onClick={() => setAction("Confirm")} aria-pressed={action === "Confirm"} className={`btn bg-emerald-500 text-white bezel-lit/50 bezel-dim/30 bezel-dim-color-emerald-950 transition-[box-shadow,transform,ring] duration-150 active:translate-y-px ${action === "Confirm" ? "ring-2 ring-emerald-300/80" : ""}`}>
                 Confirm
               </button>
-              <button type="button" className="btn size-10 rounded-full px-0 text-lg" aria-label="Add">
-                +
+              <button type="button" onClick={() => setCount((value) => value + 1)} className="btn size-10 rounded-full px-0 text-lg transition-[box-shadow,transform] duration-150 active:translate-y-px" aria-label="Add">
+                {count || "+"}
               </button>
             </div>
             <div className="text-xs font-medium tracking-wide text-stone-500 uppercase dark:text-neutral-500">pill group</div>
             <div className="inline-flex w-fit gap-1 rounded-full bg-stone-300/70 p-1 well-base dark:bg-neutral-800">
-              {["Day", "Week", "Month"].map((label, i) => (
+              {["Day", "Week", "Month"].map((label) => (
                 <button
                   key={label}
                   type="button"
+                  onClick={() => setPeriod(label)}
+                  aria-pressed={period === label}
                   className={
-                    i === 1
-                      ? "rounded-full bg-stone-100 px-4 py-1.5 text-sm font-medium bezel-base dark:bg-neutral-600"
-                      : "rounded-full px-4 py-1.5 text-sm text-stone-600 dark:text-neutral-400"
+                    period === label
+                      ? "rounded-full bg-stone-100 px-4 py-1.5 text-sm font-medium bezel-base transition-[background-color,box-shadow,transform] duration-150 dark:bg-neutral-600"
+                      : "rounded-full px-4 py-1.5 text-sm text-stone-600 transition-[background-color,color,transform] duration-150 hover:bg-stone-100/60 active:translate-y-px dark:text-neutral-400 dark:hover:bg-neutral-700"
                   }
                 >
                   {label}
@@ -109,10 +118,11 @@ export function Basics() {
             </label>
             <div className="flex items-center gap-3 pt-1">
               <div className="relative h-2 flex-1 rounded-full bg-stone-300 well-base dark:bg-neutral-800">
-                <div className="absolute inset-y-0 left-0 w-3/5 rounded-full bg-sky-500 bezel-lit/40 bezel-dim/30" />
-                <div className="absolute top-1/2 left-3/5 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-stone-100 bezel-base dark:bg-neutral-300" />
+                <div className="absolute inset-y-0 left-0 rounded-full bg-sky-500 bezel-lit/40 bezel-dim/30 transition-[width] duration-150" style={{ width: `${intensity}%` }} />
+                <div className="absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-stone-100 bezel-base transition-[left] duration-150 dark:bg-neutral-300" style={{ left: `${intensity}%` }} />
+                <input className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" type="range" min="0" max="100" value={intensity} onChange={(event) => setIntensity(Number(event.target.value))} aria-label="Intensity" />
               </div>
-              <span className="w-8 font-mono text-xs text-stone-500">60</span>
+              <span className="w-8 font-mono text-xs text-stone-500">{intensity}</span>
             </div>
           </div>
         </div>

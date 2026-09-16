@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 
+import { Code } from "../components/Code.tsx"
 import { Demo } from "../components/Demo.tsx"
 import { Section } from "../components/Section.tsx"
 import { cn } from "../lib/cn.ts"
@@ -67,6 +68,7 @@ export function Merge() {
   const [a, setA] = useState(PRESETS[0]?.a ?? "")
   const [b, setB] = useState(PRESETS[0]?.b ?? "")
   const [why, setWhy] = useState(PRESETS[0]?.why ?? "")
+  const [selected, setSelected] = useState(PRESETS[0]?.label ?? "")
   const input = `${a} ${b}`.trim()
   const stock = twMerge(a, b)
   const ours = cn(a, b)
@@ -88,6 +90,23 @@ export function Merge() {
         </>
       }
     >
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-stone-900 dark:text-white">Optional: set up your cn() once</h3>
+        <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+          Install tailwind-merge@^3, then pass the same surfaces used by your plugin. createCn(surfaces) requires that argument;
+          there is no default preset or separate options object. Static className strings do not need this step.
+        </p>
+        <Code>{`// src/lib/cn.ts
+import { createCn } from "@exegia/specular/merge"
+import { surfaces } from "../../specular.config.ts"
+
+export const cn = createCn(surfaces)`}</Code>
+        <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+          Already customizing tailwind-merge? Use extendTailwindMerge(mergeConfig(surfaces)) instead. mergeConfig returns configuration;
+          createCn returns the ready helper. Both handle normal Tailwind classes too. The helper accepts strings, arrays, and falsy
+          values; run clsx first if you use object syntax. Neither function generates CSS.
+        </p>
+      </div>
       <Demo
         title="Try it"
         description="Two class strings go in; the stock merge and the generated one come out. Struck-through classes were dropped."
@@ -106,34 +125,37 @@ export const cn = createCn(surfaces)          // accepts strings, arrays, falsy 
                   setA(p.a)
                   setB(p.b)
                   setWhy(p.why)
+                  setSelected(p.label)
                 }}
-                className={cn("btn h-8 px-3 text-xs", a === p.a && b === p.b && "bg-stone-800 text-white bezel-lit/25 dark:bg-white dark:text-neutral-900")}
+                className={cn("btn h-8 px-3 text-xs transition-[background-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]", selected === p.label && "bg-stone-800 text-white bezel-lit/25 dark:bg-white dark:text-neutral-900")}
               >
                 {p.label}
               </button>
             ))}
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input aria-label="first classes" className={inputCls} value={a} onChange={(e) => setA(e.target.value)} />
-            <input aria-label="second classes" className={inputCls} value={b} onChange={(e) => setB(e.target.value)} />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2 rounded-xl bg-stone-200/70 p-4 dark:bg-neutral-900">
-              <div className="text-xs font-medium tracking-wide text-stone-500 uppercase dark:text-neutral-500">stock twMerge</div>
-              <Diff input={input} output={stock} />
-              <div className="mt-3 flex h-14 items-center justify-center rounded-xl bg-stone-200 dark:bg-neutral-800">
-                <div className={cn("size-10 rounded-full bg-stone-200 dark:bg-neutral-800", stock)} />
+          <div key={selected} className="merge-panel grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input aria-label="first classes" className={inputCls} value={a} onChange={(e) => setA(e.target.value)} />
+              <input aria-label="second classes" className={inputCls} value={b} onChange={(e) => setB(e.target.value)} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2 rounded-xl bg-stone-200/70 p-4 dark:bg-neutral-900">
+                <div className="text-xs font-medium tracking-wide text-stone-500 uppercase dark:text-neutral-500">stock twMerge</div>
+                <Diff input={input} output={stock} />
+                <div className="mt-3 flex h-14 items-center justify-center rounded-xl bg-stone-200 dark:bg-neutral-800">
+                  <div className={cn("size-10 rounded-full bg-stone-200 dark:bg-neutral-800", stock)} />
+                </div>
+              </div>
+              <div className="grid gap-2 rounded-xl bg-stone-200/70 p-4 dark:bg-neutral-900">
+                <div className="text-xs font-medium tracking-wide text-stone-500 uppercase dark:text-neutral-500">createCn(surfaces)</div>
+                <Diff input={input} output={ours} />
+                <div className="mt-3 flex h-14 items-center justify-center rounded-xl bg-stone-200 dark:bg-neutral-800">
+                  <div className={cn("size-10 rounded-full bg-stone-200 dark:bg-neutral-800", ours)} />
+                </div>
               </div>
             </div>
-            <div className="grid gap-2 rounded-xl bg-stone-200/70 p-4 dark:bg-neutral-900">
-              <div className="text-xs font-medium tracking-wide text-stone-500 uppercase dark:text-neutral-500">createCn(surfaces)</div>
-              <Diff input={input} output={ours} />
-              <div className="mt-3 flex h-14 items-center justify-center rounded-xl bg-stone-200 dark:bg-neutral-800">
-                <div className={cn("size-10 rounded-full bg-stone-200 dark:bg-neutral-800", ours)} />
-              </div>
-            </div>
+            {why && <p className="text-sm text-stone-600 dark:text-neutral-400">{why}</p>}
           </div>
-          {why && <p className="text-sm text-stone-600 dark:text-neutral-400">{why}</p>}
         </div>
       </Demo>
     </Section>

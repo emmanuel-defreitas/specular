@@ -1,50 +1,47 @@
-<div align="center">
-
-<img src="assets/logo.svg" alt="" width="132" height="132">
-
 # @exegia/specular
 
-**✨ Specular lighting for Tailwind v4 + React — a two-layer inset bezel as
-utilities, a `cn()` that keeps them alive, and a rim highlight that tracks the
-pointer.**
+Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + React.
 
-[![npm](https://img.shields.io/npm/v/@exegia/specular?color=6366f1&labelColor=1c1917)](https://www.npmjs.com/package/@exegia/specular) [![types](https://img.shields.io/npm/types/@exegia/specular?color=38bdf8&labelColor=1c1917)](https://www.npmjs.com/package/@exegia/specular) [![provenance](https://img.shields.io/badge/npm-provenance-a855f7?labelColor=1c1917)](https://www.npmjs.com/package/@exegia/specular#provenance) [![runtime deps](https://img.shields.io/badge/runtime%20deps-0-f43f5e?labelColor=1c1917)](#install) [![license](https://img.shields.io/npm/l/@exegia/specular?color=fbbf24&labelColor=1c1917)](LICENSE)
-
-<img src="assets/demo.gif" alt="Six avatars whose rim highlights turn to follow the pointer as it moves across them" width="100%">
-
-<sub>Six discs, one window listener. Recorded from <a href="examples/vite-react"><code>examples/vite-react</code></a>.</sub>
-
-</div>
-
----
-
-Declare a surface, get a utility family that draws a two-layer inset "bezel"
-one axis at a time, a tailwind-merge config that keeps those utilities alive
-in `cn()`, and React primitives that light the surface with the pointer.
+[npm](https://www.npmjs.com/package/@exegia/specular) · [live examples](https://emmanuel-defreitas.github.io/specular/) · [MIT](LICENSE)
 
 ## Install
 
 ```bash
-npm i @exegia/specular      # or: bun add / pnpm add / yarn add
+bun add @exegia/specular
 ```
 
-| export | contents |
-|---|---|
-| `@exegia/specular` | `defineSurfaces` + types — the shared module both consumers import |
-| `@exegia/specular/plugin` | `createPlugin(surfaces)` — Tailwind v4 plugin factory, pure JS |
-| `@exegia/specular/merge` | `mergeConfig(surfaces)`, `createCn(surfaces)` — tailwind-merge |
-| `@exegia/specular/react` | `usePointerLight`, `<Rim>`, `measureRimTone`, `toneToAlphas`, `useRimTone` |
+All entry points below are included in this one package. The package declares Tailwind CSS **4.1–4.x** as a peer dependency and Node.js **22.18+** as its engine. Set up Tailwind in your app before using the generated utility classes.
 
-Peers: `tailwindcss@^4.1 <5`; `react@^19` and `tailwind-merge@^3` only if you
-use `/react` or `/merge`. No runtime dependencies.
+Install these optional peers only for the features you use, if your app does not already have them:
+
+```bash
+# For @exegia/specular/react
+bun add react@^19
+
+# For @exegia/specular/merge
+bun add tailwind-merge@^3
+```
 
 ## Setup
 
-One config, two consumers. It has to be a JS module: `@plugin` options are
-flat scalars only, and tailwind-merge runs in the browser.
+Choose the effect you want; you do not need every entry point.
+
+| I want to… | What to set up |
+| --- | --- |
+| Add inset highlights/shadows with classes such as `bezel-base` | Define surfaces and register the Tailwind plugin: steps 1–3 below. React is not required. |
+| Merge Specular classes in a `cn()` helper | Also pass the same surfaces to `createCn`: step 4. |
+| Put a rim overlay on an avatar or image | Use `<Rim>` from `/react`. No surface config or Specular plugin is required. See [React effects](#exegiaspecularreact--react-effects). |
+| Make a rim follow the pointer | Combine `usePointerLight(ref)` with `<Rim angle={angle}>`. |
+| Make an inset bezel follow the pointer | Combine the Tailwind setup with `usePointerLight` and `litVars`. |
+
+### 1. Define your surfaces
+
+A **surface** is a named collection of shadow layers. Its name becomes the utility prefix: `bezel` below creates `bezel-*` classes. This is your app's configuration; Specular does not ship a default surface preset.
+
+Create these two files at your project root:
 
 ```ts
-// bezel.config.ts
+// specular.config.ts
 import { defineSurfaces } from "@exegia/specular"
 
 export const surfaces = defineSurfaces({
@@ -54,212 +51,228 @@ export const surfaces = defineSurfaces({
       dim: { color: "#000", y: -1, blur: 2, alpha: 15, dark: { y: -8, alpha: 20 } },
     },
   },
-  card: {
-    layers: {
-      lit:  { inset: true,  color: "#fff", y: 1, alpha: 60 },
-      drop: { inset: false, color: "#000", y: 4, blur: 8, alpha: 15 },
-    },
-  },
 })
 ```
 
-```js
-// tailwind.plugin.js
+```ts
+// specular.plugin.ts
 import { createPlugin } from "@exegia/specular/plugin"
-import { surfaces } from "./bezel.config"
+import { surfaces } from "./specular.config.ts"
+
 export default createPlugin(surfaces)
 ```
 
+`defineSurfaces` validates the names and preserves TypeScript types. It does not generate CSS. `createPlugin` turns that configuration into Tailwind utilities.
+
+### 2. Register the plugin in your CSS
+
+In your app's Tailwind stylesheet:
+
 ```css
+/* src/app.css */
 @import "tailwindcss";
-@plugin "./tailwind.plugin.js";
+@plugin "../specular.plugin.ts";
 ```
 
+The plugin path is relative to this CSS file. Make sure your app loads this stylesheet.
+
+**Register your local plugin file, not `@plugin "@exegia/specular/plugin"`.** The package exports a factory that needs your `surfaces`; the local file calls it and exports the configured plugin. There is no additional Specular stylesheet to import.
+
+### 3. Use the generated classes
+
+```tsx
+<button className="rounded-lg bg-stone-200 px-4 py-2 bezel-base active:bezel-lit/20 active:bezel-dim/40">
+  Press me
+</button>
+```
+
+`bezel-base` applies all configured layers. Utilities let you change individual properties:
+
+| Class | Effect |
+| --- | --- |
+| `bezel-lit/60` | Set the `lit` layer's alpha to 60%. |
+| `bezel-lit-t-2` | Light the top edge with a 2px inset offset. |
+| `bezel-dim-b-1` | Set a 1px offset from the bottom edge. |
+| `bezel-lit-blur-4` | Set the `lit` layer's blur to 4px. |
+| `bezel-spread-1` | Set every layer's spread to 1px. |
+
+Each modifier utility also applies the surface's full shadow, so `bezel-base` is useful for the preset but is not required alongside a modifier. Bare layer classes such as `bezel-lit` keep the configured alpha.
+
+The `dark` values activate under a `.dark` ancestor by default, for example `<html class="dark">`. Your app controls that class. Change a surface's `darkSelector` to use another selector or `@media (prefers-color-scheme: dark)`.
+
+### 4. Optional: configure `cn()`
+
+Use this if you merge dynamic classes with tailwind-merge. Static `className` strings do not need it.
+
 ```ts
-// lib/utils.ts
+// src/lib/cn.ts
 import { createCn } from "@exegia/specular/merge"
-import { surfaces } from "./bezel.config"
+import { surfaces } from "../../specular.config.ts"
+
 export const cn = createCn(surfaces)
 ```
 
-Then: `<div class="bezel-lit bezel-dim rounded-full" />`. The `dark` blocks
-land in a `.dark { --bezel-lit-y: … }` token block, so the element carries no
-`dark:` classes. Set `darkSelector` per surface for other strategies
-(`"@media (prefers-color-scheme: dark)"` wraps `:root`).
-
-### Layer config
-
-```ts
-type LayerConfig = {
-  inset?: boolean          // default true; false = outer drop layer
-  color?: string           // default "#fff" for the first layer, "#000" after
-  x?: number | string      // px number or any CSS length; default 0
-  y?: number | string
-  blur?: number | string   // default 0
-  spread?: number | string // default 0 — the knob that turns a hairline into a ring
-  alpha?: number           // 0-100, default 100
-  dark?: Partial<Omit<LayerConfig, "inset" | "dark">>
-}
+```tsx
+<button className={cn("bezel-base bezel-lit/60", pressed && "bezel-lit/20")}>
+  Press me
+</button>
 ```
 
-Layer order in the map is paint order in `box-shadow`. `defineSurfaces` throws
-on a surface named after a core Tailwind root (`shadow`, `inset-shadow`,
-`ring`, `blur`, …), on names with `/`, `:`, whitespace or uppercase, and on a
-layer named `blur`, `spread`, `base` or `color`.
+**`createCn(surfaces)` requires your surface config.** There is no zero-argument default or separate options object. Create the helper once, using the same config as the plugin, then call `cn(...)` throughout your app. It merges normal Tailwind classes as well as Specular classes.
 
-> Dark mode is not the light values dimmed. On a dark page the white highlight
-> has to all but vanish (5% against 80%) while the shadow grows long and soft
-> (8px against 1px), or the disc reads as a lit dome on black.
+## Exports, by purpose
 
-## Utilities
+### `@exegia/specular` — shared configuration and inline styles
 
-For a surface `S` and a layer `L`. Every utility also emits the base
-`box-shadow`, so any single class stands alone.
+| Export | What it provides |
+| --- | --- |
+| `defineSurfaces(config)` | Validates your surface/layer names and returns the typed config shared by the plugin and merge helper. |
+| `litVars(angle, depth?, surface?)` | Returns inline CSS variables that turn a surface's `lit` layer toward an angle. Defaults: depth `2.5` pixels, surface name `"card"`. |
+| `Surfaces`, `SurfaceConfig`, `LayerConfig`, `Length`, `LitVars` | Types for configuration and inline styles. |
 
-| utility | writes |
-|---|---|
-| `S-base` (or `baseClass`) | `box-shadow: var(--tw-S-shadow)` |
-| `S-L` | the base `box-shadow` only: layer `L` at its configured alpha, so the `dark` preset applies |
-| `S-L/40`, `S-L/[0.4]` | `--tw-S-L-alpha: 40` (fractions are scaled; `/80` ≡ `/[0.8]`); `/100` is explicit full strength |
-| `S-L-t-N` | `--tw-S-L-y: calc(N * 1px)` — light enters from the top, pushes the layer down |
-| `S-L-b-N` | `--tw-S-L-y: calc(N * -1px)` |
-| `S-L-l-N` / `S-L-r-N` | `--tw-S-L-x` |
-| `S-L-blur-N`, `S-L-spread-N` | `--tw-S-L-blur`, `--tw-S-L-spread` |
-| `S-L-color-red-500`, `S-L-color-[#fff]` | `--tw-S-L-color` |
-| `S-blur-N`, `S-spread-N` | every layer at once |
+Layer settings are optional: inset defaults to `true`, color to white for the first layer and black for later layers, offsets/blur/spread to `0`, and alpha to `100` (percent). Supply offsets or blur to make an inset layer visible. The base class defaults to `<surface>-base`.
 
-`N` is a bare integer, a decimal, or `[<length>]`. `-t-`/`-b-` write the same
-variable, as do `-l-`/`-r-`: pick one per layer per axis. `-t-[2]` passes
-through as the unitless `2`, which is invalid in `box-shadow` — core behaves
-the same.
-
-### How it works: three tiers
-
-| tier | name | set by | inherits |
-|---|---|---|---|
-| composed | `--tw-S-shadow` | universal selector in `@layer base` | set everywhere |
-| instance | `--tw-S-L-{x,y,blur,spread,color,alpha}` | utilities; `@property { syntax: "*"; inherits: false }`, no `initial-value` | no |
-| preset | `--S-L-{…}` | the `dark` block, or your CSS | yes |
-
-Each component is `var(--tw-S-L-y, var(--S-L-y, <default>))`: the utility's
-value if set on this element, else the inherited preset, else the config
-default. Registering the instance tier without an `initial-value` gives it
-the guaranteed-invalid value, so `var()` falls through; `inherits: false`
-stops a nested bezel from picking up its ancestor's offsets. Verified in
-Chromium 152 (a registered `--x: 20px` on the parent leaves the child at the
-fallback; an unregistered one leaks). Not yet verified in WebKit — if it
-ever leaks there, drop the `@property` block and everything else still works.
-
-## `cn()` and why the merge config ships here
-
-`twMerge("inset-shadow-lit-t-2 inset-shadow-dim-b-1")` with stock
-tailwind-merge returns `"inset-shadow-dim-b-1"`: any custom utility whose
-name shares a prefix with a core group is filed under that group and only the
-last survives. That shipped once — the CSS compiled, a `toContain` test
-passed on the survivor, and the lit layer never reached the screen.
-
-`mergeConfig(surfaces)` generates one class group per custom property,
-bidirectional conflicts with core `shadow`/`inset-shadow`, all-layer groups
-that displace their per-layer twins, and the full cross-surface matrix (two
-surfaces on one element means one `box-shadow` wins outright). Group ids are
-a template-literal union, so a typo in your own `conflictingClassGroups` is a
-compile error.
-
-`createCn` accepts what tailwind-merge accepts (strings, arrays, falsy). For
-clsx's object form: `extendTailwindMerge(mergeConfig(surfaces))(clsx(...))`.
-
-## React
-
-Every entry carries `"use client"`. SSR renders the static emboss; nothing
-touches `window` at module scope.
+For a pointer-following **inset bezel**, use the configured surface name and a layer named `lit`:
 
 ```tsx
-import { usePointerLight, Rim, useRimTone, toneToAlphas } from "@exegia/specular/react"
+"use client"
 
-function Avatar({ src }: { src: string }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const angle = usePointerLight(ref)               // raw bearing, 0 = 12 o'clock
-  const tone = useRimTone(src)                     // 0–1 rim lightness, or null
-  const alphas = tone === null ? undefined : toneToAlphas(tone)
+import { useRef } from "react"
+import { litVars } from "@exegia/specular"
+import { usePointerLight } from "@exegia/specular/react"
+
+export function LitButton() {
+  const ref = useRef<HTMLButtonElement>(null)
+  const angle = usePointerLight(ref)
+
   return (
-    <span ref={ref} className="relative size-16 rounded-full bezel-lit bezel-dim">
-      <img src={src} className="size-full rounded-full" />
-      <Rim angle={angle * 0.8} hi={alphas?.hi} lo={alphas?.lo} className="rounded-full" />
-    </span>
+    <button
+      ref={ref}
+      className="rounded-lg bg-stone-200 px-4 py-2 bezel-base"
+      style={litVars(angle, 2.5, "bezel")}
+    >
+      Move your pointer
+    </button>
   )
 }
 ```
 
-- **`usePointerLight(ref, options?)`** — one shared window listener and one
-  rAF per frame for every subscriber on the page; 1.5° epsilon; shortest-arc
-  unwrapping so `rotate()` never spins the long way round; no subscription
-  under `prefers-reduced-motion`. Damping is yours (`angle * 0.8`).
-  `{ mode: "var", property: "--light-angle" }` writes `<angle>deg` on the
-  element with no re-render — the escape hatch for lists.
-- **`<Rim>`** — the masked conic sweep, `rotate()` as the animated property,
-  radius-relative mask so it reads the same at 32px and 64px. Radius is
-  yours: pass `rounded-full`. Alphas come from `--rim-hi-a` / `--rim-lo-a`
-  (light 1 / 0.2 baked in; the plugin emits the dark 0.18 / 0.4 block).
-- **`measureRimTone(src)`** — Rec. 709 luma over the outer band of a 16×16
-  sample; `null` on SSR, decode error or a host without CORS headers;
-  memoised per `src`, a `null` is evicted so a later mount retries.
-- **`toneToAlphas(t, ends?)`** — `{ hi: 0.7 + 0.3t, lo: 0.6 − 0.4t }`,
-  retunable through `ends`.
+This uses the Tailwind plugin but does not need `<Rim>`.
 
-## Things worth knowing
+### `@exegia/specular/plugin` — generate Tailwind CSS
 
-- **An inset shadow paints under the root's children.** A `size-full` image
-  hides it. That is why `<Rim>` is a separate overlay, and why a fallback
-  must stay transparent for the emboss to show.
-- **The family owns `box-shadow`.** Never pair a surface with `shadow-*` or
-  `ring-*`; `cn()` deletes one, and raw class strings leave the stylesheet to
-  pick an arbitrary winner.
-- **`S-blur-N` and `S-L-blur-N` write the same var.** In the stylesheet (and
-  in `@apply`) the winner is Tailwind's sort order, not class order. `cn()`
-  resolves it: all-layer displaces per-layer.
-- **Browser floor: `color-mix()`** (Chrome 111, Safari 16.2, Firefox 113).
-  Tailwind's fallback branch drops the alpha, so below that the surface
-  paints opaque. Accepted: all three are 2023.
-- **`@apply` of a surface inside `@layer components` works.**
-- **Opposite edges of one layer overwrite; they do not add.** Two layers is
-  the way to light two edges.
+`createPlugin(surfaces, options?)` is the build-time factory used in setup step 1. It generates the surface utilities and dark-mode presets. It does not handle pointer movement or class merging, and it does not require React.
 
-## Migrating an existing `inset-shadow-*` family
+The `surfaces` argument is required; the second argument is optional. By default, the plugin also supplies `<Rim>` dark-mode tokens under `.dark`: `hi: 0.18`, `lo: 0.4`. You can customize those independently of your surfaces:
 
-A surface named `inset-shadow` with `baseClass: "inset-shadow-bezel"`,
-`allowCoreCollision: true` and layers `lit` / `dim` reproduces the class API
-exactly (`inset-shadow-lit-t-3 inset-shadow-lit/80 …`), and the merge config
-handles the core collision. The tests cover this shape class by class.
-
-## Example app
-
-`examples/vite-react` is a Vite + React 19 + Tailwind v4 page that walks
-through every surface, offset, alpha, blur and colour utility, the `glow`
-hover halo, the pointer-lit rims and the `cn()` merge. It runs against the
-library in this checkout:
-
-```bash
-make example-dev       # build the library, install the example, start Vite
-make example-build     # production build, what CI runs
+```ts
+export default createPlugin(surfaces, {
+  rim: { darkSelector: ".dark", dark: { hi: 0.18, lo: 0.4 } },
+})
 ```
 
-A focused `demo/` app shows just the apply steps and the hover behaviour
-(cards lift, glow buttons, press sink, pointer-following light and rims):
+Use `{ rim: false }` to omit those tokens. `PluginOptions` and `RimTokens` are available as types.
 
-```bash
-make demo-dev          # build the library, install the demo, start Vite
+### `@exegia/specular/merge` — merge class names correctly
+
+| Export | When to use it |
+| --- | --- |
+| `createCn(surfaces)` | You want a ready-to-use `cn(...)` function that understands the configured utilities and their conflicts. |
+| `mergeConfig(surfaces)` | You already customize tailwind-merge and want to incorporate Specular's class groups into that setup. Returns configuration, not a merging function. |
+
+Both require the same surfaces passed to the plugin. They do not generate CSS or register the plugin. `createCn` accepts strings, arrays, and falsy values; it does **not** accept clsx-style objects.
+
+The lower-level equivalent is:
+
+```ts
+import { extendTailwindMerge } from "tailwind-merge"
+import { mergeConfig } from "@exegia/specular/merge"
+import { surfaces } from "./specular.config.ts"
+
+export const cn = extendTailwindMerge(mergeConfig(surfaces))
 ```
 
-See [`examples/vite-react/README.md`](examples/vite-react/README.md) for what
-each section shows.
+If your existing helper uses `clsx`, pass its output to this configured merger. `BezelGroupId` and `BezelMergeConfig` are available as types.
+
+### `@exegia/specular/react` — React effects
+
+**`<Rim>` draws the effect; `usePointerLight` provides movement.** They are independent: a rim can stay still, and the hook can drive a bezel or your own styles.
+
+| Export | What it provides | Required setup |
+| --- | --- | --- |
+| `<Rim>` | A decorative gradient overlay, useful above images that would cover an inset shadow. Defaults to angle `0`. | A positioned parent and a border radius on the rim. |
+| `usePointerLight(ref, options?)` | The pointer's angle around the referenced element, in degrees clockwise from the top. Renders nothing. | Attach the ref to the element you want to light. Options are optional. |
+| `useRimTone(src, enabled?)` | Measures image-edge brightness as React state (`0`–`1`, or `null` while unavailable). | An image URL; enabled by default. |
+| `measureRimTone(src)` | The same image measurement as a promise, for manual use instead of the hook. | Browser image/canvas support. |
+| `toneToAlphas(tone, ends?)` | Converts brightness to `{ hi, lo }` props for `<Rim>`. | A numeric tone; custom endpoints are optional. |
+| `useReducedMotion()` | Tracks the user's reduced-motion preference for your own effects. | No arguments. Already used internally by the pointer hook and rim. |
+
+#### A pointer-following rim
+
+This example needs React 19 and ordinary Tailwind utilities, but **no Specular plugin, surfaces, or `cn()` setup**:
+
+```tsx
+"use client"
+
+import { useRef } from "react"
+import { Rim, usePointerLight } from "@exegia/specular/react"
+
+export function Orb() {
+  const ref = useRef<HTMLDivElement>(null)
+  const angle = usePointerLight(ref)
+
+  return (
+    <div ref={ref} className="relative size-20 rounded-full bg-stone-300">
+      <Rim angle={angle} className="rounded-full" />
+    </div>
+  )
+}
+```
+
+For a static rim, omit the ref and hook and render `<Rim className="rounded-full" />`. The component positions itself absolutely; the parent needs `position: relative`. Its effect uses inline styles, so you can also supply sizing, background, and border radius with your own CSS instead of Tailwind.
+
+`<Rim>` accepts `hi` and `lo` strength overrides from `0` to `1`. Without overrides, it reads `--rim-hi-a` and `--rim-lo-a`, falling back to `1` and `0.2`. The Specular plugin supplies dark-mode values; without it, set the CSS variables or props yourself if you want theme-specific strengths.
+
+`usePointerLight(ref, { damping: 0.4 })` makes tracking more gradual; the default is `1`. Set `enabled: false` to stop tracking. For custom CSS effects, `{ mode: "var" }` writes `--light-angle` on the referenced element instead of returning an angle or rerendering on pointer changes; `property` can override that variable name. The hook stops subscribing under reduced motion, and `<Rim>` disables its rotation transition.
+
+In apps with React Server Components, put components that call these hooks in a `"use client"` file, as shown above.
+
+#### Optional: adapt a rim to an image
+
+Tone helpers adjust highlight/shadow strength to the image's brightness. They are not required for pointer tracking or for `<Rim>` to render.
+
+```tsx
+"use client"
+
+import { useRef } from "react"
+import { Rim, toneToAlphas, usePointerLight, useRimTone } from "@exegia/specular/react"
+
+export function LitAvatar({ src, alt }: { src: string; alt: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const angle = usePointerLight(ref)
+  const tone = useRimTone(src)
+  const alphas = tone === null ? {} : toneToAlphas(tone)
+
+  return (
+    <div ref={ref} className="relative size-20 rounded-full">
+      <img src={src} alt={alt} className="size-full rounded-full object-cover" />
+      <Rim angle={angle} {...alphas} className="rounded-full" />
+    </div>
+  )
+}
+```
+
+`useRimTone` wraps `measureRimTone`; choose one, not both. Measurement returns `null` if the image cannot be sampled, including when a remote host does not allow CORS. The image can still display, and this example keeps the rim's default strengths until a tone is available.
+
+`toneToAlphas` defaults to `{ hi: 0.7, lo: 0.6 }` for a black image edge and `{ hi: 1, lo: 0.2 }` for a white edge, interpolating between them. These explicit props override the rim's theme tokens.
+
+The React entry point also exports `PointerLightOptions`, `RimProps`, `ToneAlphas`, and `ToneEnds` types, plus `ANGLE_EPSILON`, `RIM_TRANSITION`, and `DEFAULT_TONE_ENDS` constants for advanced use.
 
 ## Development
 
 ```bash
-make ci        # lint (tsc), build, test, smoke
-make help      # every target, including the release pipeline
+make ci
+make example-dev
 ```
 
-Tests run on `node --test` with no framework. The Tailwind harness compiles
-in memory in under a second. See `.github/WORKFLOW.md` for branching and
-releases.
+The [example site](examples/vite-react) is the complete visual reference.
