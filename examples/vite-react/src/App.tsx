@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
+import logo from "../../../assets/logo.svg"
+
 import { ThemeToggle, useTheme } from "./components/ThemeToggle.tsx"
 import { Alive } from "./sections/Alive.tsx"
 import { Basics } from "./sections/Basics.tsx"
@@ -67,7 +69,7 @@ export function App() {
       <header className="sticky top-0 z-10 border-b border-stone-300/60 bg-stone-100/80 backdrop-blur dark:border-neutral-700 dark:bg-neutral-900/80">
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
           <a href="#top" className="flex items-center gap-2.5 font-semibold text-stone-900 dark:text-white">
-            <span className="size-5 rounded-full bg-stone-300 bezel-base dark:bg-neutral-700" aria-hidden="true" />
+            <img src={logo} className="size-6" alt="" />
             specular
           </a>
           <nav className="hidden gap-1 text-sm text-stone-600 xl:flex dark:text-neutral-400">
