@@ -97,4 +97,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           TAG: ${{ needs.build.outputs.tag }}
-        run: gh release upload "$TAG" dist-pack/* --clobber
+        run: |
+          set -eu
+          immutable="$(gh api "repos/$GH_REPO/releases/tags/$TAG" --jq '.immutable')"
+          if [ "$immutable" = true ]; then
+            echo "Release $TAG is immutable; the tarball remains available on npm and in the workflow artifact." >> "$GITHUB_STEP_SUMMARY"
+          else
+            gh release upload "$TAG" dist-pack/* --clobber
+          fi

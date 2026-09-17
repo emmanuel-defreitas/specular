@@ -1,8 +1,22 @@
+<div align="center">
+
+<img src="assets/logo.svg" alt="Specular reflection mark" width="96" height="96">
+
 # @exegia/specular
 
 Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + React.
 
 [npm](https://www.npmjs.com/package/@exegia/specular) · [live examples](https://emmanuel-defreitas.github.io/specular/) · [MIT](LICENSE)
+
+<a href="https://emmanuel-defreitas.github.io/specular/">
+  <img src="assets/demo.gif" alt="Six avatars with rim highlights following the pointer" width="100%">
+</a>
+
+<sub>Six discs, one window listener. Explore the interactive presentation on the <a href="https://emmanuel-defreitas.github.io/specular/">example site</a>.</sub>
+
+</div>
+
+---
 
 ## Install
 
