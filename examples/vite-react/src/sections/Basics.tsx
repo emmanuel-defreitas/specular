@@ -22,27 +22,27 @@ export function Basics() {
           <code className="font-mono text-[0.9em]">box-shadow</code>, so any single class stands on its own.{" "}
           <code className="font-mono text-[0.9em]">bezel-base</code> is the surface exactly as configured, and so is the bare{" "}
           <code className="font-mono text-[0.9em]">bezel-lit</code>; <code className="font-mono text-[0.9em]">bezel-lit/40</code> sets that layer's alpha
-          explicitly and <code className="font-mono text-[0.9em]">bezel-lit/100</code> is full strength. This page
-          declares four surfaces: <em>bezel</em>, <em>card</em>, <em>well</em> and <em>glow</em>.
+          explicitly and <code className="font-mono text-[0.9em]">bezel-lit/100</code> is full strength. Use a lower dark-mode variant on dark fills. This page
+          uses bezel for directional light and well for recessed edges. Raised cards elsewhere also combine an inset edge with a drop shadow.
         </>
       }
     >
       <Demo
         title="Flat, then lit"
-        description="The same disc four ways. The classes on the right are the only difference — no gradients, no borders, no pseudo-elements."
+        description="The same disc five ways. The classes on the right are the only difference — no gradients, no borders, no pseudo-elements."
         code={`
 <div class="size-20 rounded-full bg-stone-300" />               <!-- flat -->
 <div class="size-20 rounded-full bg-stone-300 bezel-base" />    <!-- emboss: lit 80% on top, dim 15% below -->
-<div class="size-20 rounded-full bg-stone-300 card-base" />     <!-- raised: hairline inside, drop shadow outside -->
+<div class="size-20 rounded-full bg-stone-300 bezel-lit-t-1 bezel-lit-blur-0 bezel-dim/0" />     <!-- crisp inset edge, no drop shadow -->
 <div class="size-20 rounded-full bg-stone-300 well-base" />     <!-- recessed: shade cast in from the top -->
-<div class="size-20 rounded-full bg-stone-300 bezel-lit/100 bezel-dim/100" />   <!-- both layers at full alpha -->`}
+<div class="size-20 rounded-full bg-stone-300 bezel-lit/100 dark:bezel-lit/18 bezel-dim/60" />   <!-- restrained highlight in dark mode -->`}
       >
         <div className="flex flex-wrap items-start justify-around gap-8">
           <Swatch classes="" label="flat" />
           <Swatch classes="bezel-base" label="bezel — emboss" />
-          <Swatch classes="card-base" label="card — raised" />
+          <Swatch classes="bezel-lit-t-1 bezel-lit-blur-0 bezel-dim/0" label="edge — crisp" />
           <Swatch classes="well-base" label="well — recessed" />
-          <Swatch classes="bezel-lit/100 bezel-dim/100" label="bezel — full alpha" />
+          <Swatch classes="bezel-lit/100 dark:bezel-lit/18 bezel-dim/60" label="bezel — stronger edge" />
         </div>
       </Demo>
 
@@ -50,7 +50,7 @@ export function Basics() {
         title="Controls"
         description={
           <>
-            Buttons, inputs and a switch built from the same three surfaces. The button is an{" "}
+            Buttons, inputs and a switch built from the same inset surfaces. The button is an{" "}
             <code className="font-mono">@apply</code> in <code className="font-mono">index.css</code>: a surface is ordinary utilities, so it composes inside{" "}
             <code className="font-mono">@layer components</code> and takes <code className="font-mono">active:</code> like any other class.
           </>
@@ -74,7 +74,7 @@ export function Basics() {
               <button type="button" onClick={() => setAction("Primary")} aria-pressed={action === "Primary"} className={`btn bg-stone-800 text-white bezel-lit/25 bezel-dim/40 transition-[box-shadow,transform,ring] duration-150 active:translate-y-px dark:bg-white dark:text-neutral-900 dark:bezel-lit/60 ${action === "Primary" ? "ring-2 ring-sky-400/70" : ""}`}>
                 Primary
               </button>
-              <button type="button" onClick={() => setAction("Confirm")} aria-pressed={action === "Confirm"} className={`btn bg-emerald-500 text-white bezel-lit/50 bezel-dim/30 bezel-dim-color-emerald-950 transition-[box-shadow,transform,ring] duration-150 active:translate-y-px ${action === "Confirm" ? "ring-2 ring-emerald-300/80" : ""}`}>
+              <button type="button" onClick={() => setAction("Confirm")} aria-pressed={action === "Confirm"} className={`btn bg-emerald-500 text-white bezel-lit/50 dark:bezel-lit/9 bezel-dim/30 bezel-dim-color-emerald-950 transition-[box-shadow,transform,ring] duration-150 active:translate-y-px ${action === "Confirm" ? "ring-2 ring-emerald-300/80" : ""}`}>
                 Confirm
               </button>
               <button type="button" onClick={() => setCount((value) => value + 1)} className="btn size-10 rounded-full px-0 text-lg transition-[box-shadow,transform] duration-150 active:translate-y-px" aria-label="Add">
@@ -118,7 +118,7 @@ export function Basics() {
             </label>
             <div className="flex items-center gap-3 pt-1">
               <div className="relative h-2 flex-1 rounded-full bg-stone-300 well-base dark:bg-neutral-800">
-                <div className="absolute inset-y-0 left-0 rounded-full bg-sky-500 bezel-lit/40 bezel-dim/30 transition-[width] duration-150" style={{ width: `${intensity}%` }} />
+                <div className="absolute inset-y-0 left-0 rounded-full bg-sky-500 bezel-lit/40 dark:bezel-lit/7 bezel-dim/30 transition-[width] duration-150" style={{ width: `${intensity}%` }} />
                 <div className="absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-stone-100 bezel-base transition-[left] duration-150 dark:bg-neutral-300" style={{ left: `${intensity}%` }} />
                 <input className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" type="range" min="0" max="100" value={intensity} onChange={(event) => setIntensity(Number(event.target.value))} aria-label="Intensity" />
               </div>

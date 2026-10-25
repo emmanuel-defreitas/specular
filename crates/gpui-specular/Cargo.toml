@@ -1,0 +1,22 @@
+[package]
+name = "gpui-specular"
+version = "0.1.0"
+edition = "2024"
+description = "Subtle inset lighting and pointer-following bezels for GPUI"
+license = "MIT"
+repository = "https://github.com/emmanuel-defreitas/specular"
+readme = "README.md"
+keywords = ["gpui", "ui", "shadows", "lighting"]
+categories = ["gui"]
+include = ["src/**", "examples/**", "README.md", "LICENSE", "Cargo.toml"]
+
+[dependencies]
+gpui = { package = "gpui-pre", version = "=0.3.8", default-features = false }
+
+[dev-dependencies]
+gpui_platform = { package = "gpui-pre-platform", version = "=0.3.8", default-features = false, features = ["font-kit"] }
+
+[features]
+default = []
+x11 = ["gpui_platform/x11"]
+wayland = ["gpui_platform/wayland"]

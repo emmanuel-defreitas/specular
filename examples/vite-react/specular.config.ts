@@ -1,6 +1,6 @@
 /**
  * The one config both consumers import: the Tailwind plugin (build time) and
- * the tailwind-merge `cn()` (browser). Four surfaces, each a small family of
+ * the tailwind-merge `cn()` (browser). Three surfaces, each a small family of
  * utilities. Layer order is paint order in `box-shadow`.
  *
  * `y` is the axis the light travels along. For an inset layer a positive `y`
@@ -31,18 +31,12 @@ export const surfaces = defineSurfaces({
   /** A recessed well: shadow cast into the top, a bright lip along the bottom. */
   well: {
     layers: {
-      shade: { inset: true, color: "#000", y: 2, blur: 4, alpha: 20, dark: { blur: 6, alpha: 60 } },
-      lip: { inset: true, color: "#fff", y: -1, alpha: 70, dark: { alpha: 8 } },
+      shade: { inset: true, color: "#000", y: 1, blur: 2, spread: 0, alpha: 16, dark: { blur: 2, alpha: 28 } },
+      lip: { inset: true, color: "#fff", y: -1, alpha: 45, dark: { alpha: 5 } },
     },
   },
 
-  /** Neon: a thin inner edge plus an outer halo that sits at alpha 0 until hovered. */
-  glow: {
-    layers: {
-      edge: { inset: true, color: "#fff", y: 1, alpha: 40, dark: { alpha: 15 } },
-      halo: { inset: false, color: "#6366f1", blur: 20, spread: 1, alpha: 0 },
-    },
-  },
+
 })
 
 export type AppSurfaces = typeof surfaces
