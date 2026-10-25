@@ -5,7 +5,7 @@
 # wrote it into package.json; release.yml turned that into the tag.
 #
 # Publishes with provenance. Needs `NPM_TOKEN` (an automation token for the
-# @exegia scope) — or switch to npm trusted publishing and drop the secret.
+# @emmanuel-defreitas scope) — or switch to npm trusted publishing and drop the secret.
 name: Publish
 
 on:

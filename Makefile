@@ -1,4 +1,4 @@
-# @exegia/specular — build, test, and the release pipeline.
+# @emmanuel-defreitas/specular — build, test, and the release pipeline.
 # Run `make help` for the list of targets.
 
 .DEFAULT_GOAL := help

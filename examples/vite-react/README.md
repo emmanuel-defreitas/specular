@@ -1,4 +1,4 @@
-# @exegia/specular — example app
+# @emmanuel-defreitas/specular — example app
 
 A single-page showcase of everything the library does, built with Vite, React 19
 and Tailwind v4. Every disc, button and card on the page is a `box-shadow`
@@ -17,7 +17,7 @@ bun install --frozen-lockfile && bun run build   # the library → dist/ (bun is
 cd examples/vite-react && npm ci && npm run dev
 ```
 
-The example depends on the library as `"@exegia/specular": "file:../.."`, so it
+The example depends on the library as `"@emmanuel-defreitas/specular": "file:../.."`, so it
 always runs against the source in this checkout. Rebuild the root (`npm run
 build`) after changing `src/` and Vite picks it up.
 
