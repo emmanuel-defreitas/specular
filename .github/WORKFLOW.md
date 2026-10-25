@@ -82,7 +82,7 @@ branch whose name disagrees with `package.json`. Merge with **merge commit**.
 
 The tag triggers `publish.yml`, which re-runs `make ci`, packs the tarball,
 publishes it to npm with provenance (`--access public`), and attaches
-`emmanuel-defreitas-specular-X.Y.Z.tgz` (+ sha256) to the release.
+`exegia-specular-X.Y.Z.tgz` (+ sha256) to the release.
 
 ## Workflows
 
@@ -127,7 +127,7 @@ PRs.
 | Name | Used by |
 |------|---------|
 | `AUTOMATION_APP_ID` / `AUTOMATION_APP_PRIVATE_KEY` | promote, next, pr-merged, release |
-| `NPM_TOKEN` | publish (an automation token for the `@emmanuel-defreitas` scope) |
+| `NPM_TOKEN` | publish (an automation token for the `@exegia` scope) |
 | `CLAUDE_CODE_OAUTH_TOKEN` | the AI review (optional; skips with a note if unset) |
 
 The App must be **installed on this repository**. Without it, PRs opened by

@@ -1,6 +1,6 @@
 "use client"
 
-import { Rim, usePointerLight } from "@emmanuel-defreitas/specular/react"
+import { Rim, usePointerLight } from "@exegia/specular/react"
 import { useRef, useState, type CSSProperties, type ReactNode } from "react"
 
 import { Chip } from "../components/Code.tsx"
@@ -68,7 +68,7 @@ export function Alive() {
     >
       <div className="max-w-2xl space-y-3 text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
         <p><strong className="text-stone-900 dark:text-white">Rim draws; usePointerLight moves.</strong> The hook returns an angle and renders nothing.
-          Pass it to Rim for an overlay, or to litVars(angle, 2.5, "bezel") from @emmanuel-defreitas/specular for inset lighting on a configured lit layer.</p>
+          Pass it to Rim for an overlay, or to litVars(angle, 2.5, "bezel") from @exegia/specular for inset lighting on a configured lit layer.</p>
         <p>A rim needs a positioned parent and a border radius. It does not require the Specular plugin; an inset bezel does.
           Render Rim without an angle for a static effect. Use usePointerLight(ref, {'{ damping: 0.4 }'}) for gradual tracking; the default is 1.</p>
         <p>Rim accepts hi and lo overrides from 0 to 1. Defaults are 1 and 0.2; the plugin supplies 0.18 and 0.4 under .dark.

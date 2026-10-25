@@ -123,7 +123,7 @@ export function App() {
         <Merge />
       </main>
       <footer className="border-t border-stone-300/60 py-10 text-center text-xs text-stone-500 dark:border-neutral-800 dark:text-neutral-500">
-        @emmanuel-defreitas/specular · MIT · Tailwind bezels and React rim overlays
+        @exegia/specular · MIT · Tailwind bezels and React rim overlays
       </footer>
     </>
   )

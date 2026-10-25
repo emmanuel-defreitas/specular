@@ -1,6 +1,6 @@
 "use client"
 
-import { Rim, toneToAlphas, usePointerLight, useRimTone } from "@emmanuel-defreitas/specular/react"
+import { Rim, toneToAlphas, usePointerLight, useRimTone } from "@exegia/specular/react"
 import { useRef, type ReactNode } from "react"
 
 import { cn } from "../lib/cn.ts"

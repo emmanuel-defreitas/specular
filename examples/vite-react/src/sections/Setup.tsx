@@ -3,10 +3,10 @@ import { ExportPreview, type PreviewKind } from "../components/ExportPreview.tsx
 import { Section } from "../components/Section.tsx"
 
 const EXPORTS = [
-  { preview: "surface" as PreviewKind, path: "@emmanuel-defreitas/specular", title: "Define the surface", description: "defineSurfaces validates the shared config and preserves its types. litVars converts an angle to inline offsets for a layer named lit. Neither generates CSS.", href: "#basics", link: "Explore surfaces" },
-  { preview: "plugin" as PreviewKind, path: "@emmanuel-defreitas/specular/plugin", title: "Generate the CSS", description: "createPlugin(surfaces) generates Tailwind utilities and dark-mode presets at build time. Requires your surface config; React is optional.", href: "#setup-surfaces", link: "Set up the plugin" },
-  { preview: "merge" as PreviewKind, path: "@emmanuel-defreitas/specular/merge", title: "Merge class names", description: "createCn(surfaces) returns a ready cn() helper. mergeConfig(surfaces) returns configuration for an existing tailwind-merge setup. Both use the same surfaces as the plugin.", href: "#merge", link: "Try class merging" },
-  { preview: "react" as PreviewKind, path: "@emmanuel-defreitas/specular/react", title: "Draw and move the rim", description: "Rim draws an overlay; usePointerLight supplies its angle. Optional tone helpers adapt it to images. React 19 is required; the Specular plugin is optional.", href: "#alive", link: "Explore React effects" },
+  { preview: "surface" as PreviewKind, path: "@exegia/specular", title: "Define the surface", description: "defineSurfaces validates the shared config and preserves its types. litVars converts an angle to inline offsets for a layer named lit. Neither generates CSS.", href: "#basics", link: "Explore surfaces" },
+  { preview: "plugin" as PreviewKind, path: "@exegia/specular/plugin", title: "Generate the CSS", description: "createPlugin(surfaces) generates Tailwind utilities and dark-mode presets at build time. Requires your surface config; React is optional.", href: "#setup-surfaces", link: "Set up the plugin" },
+  { preview: "merge" as PreviewKind, path: "@exegia/specular/merge", title: "Merge class names", description: "createCn(surfaces) returns a ready cn() helper. mergeConfig(surfaces) returns configuration for an existing tailwind-merge setup. Both use the same surfaces as the plugin.", href: "#merge", link: "Try class merging" },
+  { preview: "react" as PreviewKind, path: "@exegia/specular/react", title: "Draw and move the rim", description: "Rim draws an overlay; usePointerLight supplies its angle. Optional tone helpers adapt it to images. React 19 is required; the Specular plugin is optional.", href: "#alive", link: "Explore React effects" },
 ]
 
 export function Setup() {
@@ -15,7 +15,7 @@ export function Setup() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="min-w-0 space-y-3">
           <h3 className="text-lg font-semibold text-stone-900 dark:text-white">1. Install</h3>
-          <Code>{`bun add @emmanuel-defreitas/specular`}</Code>
+          <Code>{`bun add @exegia/specular`}</Code>
           <p className="text-sm leading-relaxed text-stone-600 dark:text-neutral-400">For the utility classes, start with a working Tailwind CSS 4.1–4.x app. The package requires Node.js 22.18+.</p>
         </div>
         <div className="min-w-0 space-y-3">
@@ -47,7 +47,7 @@ bun add tailwind-merge@^3`}</Code>
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           <Code className="min-w-0">{`// specular.config.ts
-import { defineSurfaces } from "@emmanuel-defreitas/specular"
+import { defineSurfaces } from "@exegia/specular"
 
 export const surfaces = defineSurfaces({
   bezel: {
@@ -60,7 +60,7 @@ export const surfaces = defineSurfaces({
   },
 })`}</Code>
           <Code className="min-w-0">{`// specular.plugin.ts
-import { createPlugin } from "@emmanuel-defreitas/specular/plugin"
+import { createPlugin } from "@exegia/specular/plugin"
 import { surfaces } from "./specular.config.ts"
 
 export default createPlugin(surfaces)`}</Code>
@@ -70,7 +70,7 @@ export default createPlugin(surfaces)`}</Code>
       <div className="space-y-5">
         <div className="max-w-2xl">
           <h3 className="text-lg font-semibold text-stone-900 dark:text-white">3. Register the plugin, then use the classes</h3>
-          <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-neutral-400">Point @plugin at your local file, relative to the stylesheet. Do not point it directly at @emmanuel-defreitas/specular/plugin: that export is a factory and needs your surfaces. Make sure your app loads this CSS.</p>
+          <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-neutral-400">Point @plugin at your local file, relative to the stylesheet. Do not point it directly at @exegia/specular/plugin: that export is a factory and needs your surfaces. Make sure your app loads this CSS.</p>
         </div>
         <Code>{`/* src/app.css */
 @import "tailwindcss";
