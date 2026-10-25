@@ -2,11 +2,11 @@
 
 <img src="assets/logo.svg" alt="Specular reflection mark" width="96" height="96">
 
-# @emmanuel-defreitas/specular
+# @exegia/specular
 
 Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + React.
 
-[npm](https://www.npmjs.com/package/@emmanuel-defreitas/specular) · [live examples](https://emmanuel-defreitas.github.io/specular/) · [MIT](LICENSE)
+[npm](https://www.npmjs.com/package/@exegia/specular) · [live examples](https://emmanuel-defreitas.github.io/specular/) · [MIT](LICENSE)
 
 <a href="https://emmanuel-defreitas.github.io/specular/">
   <img src="assets/demo.gif" alt="Six avatars with rim highlights following the pointer" width="100%">
@@ -152,20 +152,18 @@ This crate currently supplies inset lighting and direction helpers. Image-overla
 ## Install
 
 ```bash
-bun add @emmanuel-defreitas/specular
+bun add @exegia/specular
 ```
-
-Migrating from `@exegia/specular`? Replace the dependency with `@emmanuel-defreitas/specular` and update imports for the root, `/plugin`, `/merge`, and `/react` entry points. Their APIs are unchanged. The Rust crate remains `gpui-specular`.
 
 All entry points below are included in this one package. The package declares Tailwind CSS **4.1–4.x** as a peer dependency and Node.js **22.18+** as its engine. Set up Tailwind in your app before using the generated utility classes.
 
 Install these optional peers only for the features you use, if your app does not already have them:
 
 ```bash
-# For @emmanuel-defreitas/specular/react
+# For @exegia/specular/react
 bun add react@^19
 
-# For @emmanuel-defreitas/specular/merge
+# For @exegia/specular/merge
 bun add tailwind-merge@^3
 ```
 
@@ -177,7 +175,7 @@ Choose the effect you want; you do not need every entry point.
 | --- | --- |
 | Add inset highlights/shadows with classes such as `bezel-base` | Define surfaces and register the Tailwind plugin: steps 1–3 below. React is not required. |
 | Merge Specular classes in a `cn()` helper | Also pass the same surfaces to `createCn`: step 4. |
-| Put a rim overlay on an avatar or image | Use `<Rim>` from `/react`. No surface config or Specular plugin is required. See [React effects](#emmanuel-defreitasspecularreact--react-effects). |
+| Put a rim overlay on an avatar or image | Use `<Rim>` from `/react`. No surface config or Specular plugin is required. See [React effects](#exegiaspecularreact--react-effects). |
 | Make a rim follow the pointer | Combine `usePointerLight(ref)` with `<Rim angle={angle}>`. |
 | Make an inset bezel follow the pointer | Combine the Tailwind setup with `usePointerLight` and `litVars`. |
 
@@ -189,7 +187,7 @@ Create these two files at your project root:
 
 ```ts
 // specular.config.ts
-import { defineSurfaces } from "@emmanuel-defreitas/specular"
+import { defineSurfaces } from "@exegia/specular"
 
 export const surfaces = defineSurfaces({
   bezel: {
@@ -203,7 +201,7 @@ export const surfaces = defineSurfaces({
 
 ```ts
 // specular.plugin.ts
-import { createPlugin } from "@emmanuel-defreitas/specular/plugin"
+import { createPlugin } from "@exegia/specular/plugin"
 import { surfaces } from "./specular.config.ts"
 
 export default createPlugin(surfaces)
@@ -223,7 +221,7 @@ In your app's Tailwind stylesheet:
 
 The plugin path is relative to this CSS file. Make sure your app loads this stylesheet.
 
-**Register your local plugin file, not `@plugin "@emmanuel-defreitas/specular/plugin"`.** The package exports a factory that needs your `surfaces`; the local file calls it and exports the configured plugin. There is no additional Specular stylesheet to import.
+**Register your local plugin file, not `@plugin "@exegia/specular/plugin"`.** The package exports a factory that needs your `surfaces`; the local file calls it and exports the configured plugin. There is no additional Specular stylesheet to import.
 
 ### 3. Use the generated classes
 
@@ -253,7 +251,7 @@ Use this if you merge dynamic classes with tailwind-merge. Static `className` st
 
 ```ts
 // src/lib/cn.ts
-import { createCn } from "@emmanuel-defreitas/specular/merge"
+import { createCn } from "@exegia/specular/merge"
 import { surfaces } from "../../specular.config.ts"
 
 export const cn = createCn(surfaces)
@@ -269,7 +267,7 @@ export const cn = createCn(surfaces)
 
 ## Exports, by purpose
 
-### `@emmanuel-defreitas/specular` — shared configuration and inline styles
+### `@exegia/specular` — shared configuration and inline styles
 
 | Export | What it provides |
 | --- | --- |
@@ -285,8 +283,8 @@ For a pointer-following **inset bezel**, use the configured surface name and a l
 "use client"
 
 import { useRef } from "react"
-import { litVars } from "@emmanuel-defreitas/specular"
-import { usePointerLight } from "@emmanuel-defreitas/specular/react"
+import { litVars } from "@exegia/specular"
+import { usePointerLight } from "@exegia/specular/react"
 
 export function LitButton() {
   const ref = useRef<HTMLButtonElement>(null)
@@ -306,7 +304,7 @@ export function LitButton() {
 
 This uses the Tailwind plugin but does not need `<Rim>`.
 
-### `@emmanuel-defreitas/specular/plugin` — generate Tailwind CSS
+### `@exegia/specular/plugin` — generate Tailwind CSS
 
 `createPlugin(surfaces, options?)` is the build-time factory used in setup step 1. It generates the surface utilities and dark-mode presets. It does not handle pointer movement or class merging, and it does not require React.
 
@@ -320,7 +318,7 @@ export default createPlugin(surfaces, {
 
 Use `{ rim: false }` to omit those tokens. `PluginOptions` and `RimTokens` are available as types.
 
-### `@emmanuel-defreitas/specular/merge` — merge class names correctly
+### `@exegia/specular/merge` — merge class names correctly
 
 | Export | When to use it |
 | --- | --- |
@@ -333,7 +331,7 @@ The lower-level equivalent is:
 
 ```ts
 import { extendTailwindMerge } from "tailwind-merge"
-import { mergeConfig } from "@emmanuel-defreitas/specular/merge"
+import { mergeConfig } from "@exegia/specular/merge"
 import { surfaces } from "./specular.config.ts"
 
 export const cn = extendTailwindMerge(mergeConfig(surfaces))
@@ -341,7 +339,7 @@ export const cn = extendTailwindMerge(mergeConfig(surfaces))
 
 If your existing helper uses `clsx`, pass its output to this configured merger. `BezelGroupId` and `BezelMergeConfig` are available as types.
 
-### `@emmanuel-defreitas/specular/react` — React effects
+### `@exegia/specular/react` — React effects
 
 **`<Rim>` draws the effect; `usePointerLight` provides movement.** They are independent: a rim can stay still, and the hook can drive a bezel or your own styles.
 
@@ -362,7 +360,7 @@ This example needs React 19 and ordinary Tailwind utilities, but **no Specular p
 "use client"
 
 import { useRef } from "react"
-import { Rim, usePointerLight } from "@emmanuel-defreitas/specular/react"
+import { Rim, usePointerLight } from "@exegia/specular/react"
 
 export function Orb() {
   const ref = useRef<HTMLDivElement>(null)
@@ -392,7 +390,7 @@ Tone helpers adjust highlight/shadow strength to the image's brightness. They ar
 "use client"
 
 import { useRef } from "react"
-import { Rim, toneToAlphas, usePointerLight, useRimTone } from "@emmanuel-defreitas/specular/react"
+import { Rim, toneToAlphas, usePointerLight, useRimTone } from "@exegia/specular/react"
 
 export function LitAvatar({ src, alt }: { src: string; alt: string }) {
   const ref = useRef<HTMLDivElement>(null)

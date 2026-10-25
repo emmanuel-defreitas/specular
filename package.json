@@ -1,6 +1,6 @@
 {
-  "name": "@emmanuel-defreitas/specular",
-  "version": "0.3.2",
+  "name": "@exegia/specular",
+  "version": "0.3.3",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/emmanuel-defreitas/specular.git"

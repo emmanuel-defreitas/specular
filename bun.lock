@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@emmanuel-defreitas/specular",
+      "name": "@exegia/specular",
       "devDependencies": {
         "@types/node": "^24.13.3",
         "@types/react": "^19.2.18",
