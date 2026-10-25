@@ -9,7 +9,7 @@
  * on a dark page the white highlight has to almost vanish while the shadow
  * grows long and soft, or the surface reads as a lit dome on black.
  */
-import { defineSurfaces } from "@exegia/specular"
+import { defineSurfaces } from "@emmanuel-defreitas/specular"
 
 export const surfaces = defineSurfaces({
   /** The classic emboss: highlight on the top edge, shadow on the bottom. */

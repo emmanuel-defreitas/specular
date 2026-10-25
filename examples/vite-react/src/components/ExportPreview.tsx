@@ -1,4 +1,4 @@
-import { Rim, usePointerLight } from "@exegia/specular/react"
+import { Rim, usePointerLight } from "@emmanuel-defreitas/specular/react"
 import { useRef, useState } from "react"
 
 import { cn } from "../lib/cn.ts"
