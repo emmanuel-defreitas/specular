@@ -5,7 +5,7 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    // `@emmanuel-defreitas/specular` is installed from `file:../..`, which npm links as a
+    // `@exegia/specular` is installed from `file:../..`, which npm links as a
     // symlink. Vite resolves the linked files to their real path, and from
     // there a bare `import "react"` would find the repository's own devDep
     // copy — a second React, and every hook throws. `dedupe` pins those

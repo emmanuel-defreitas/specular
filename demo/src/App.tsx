@@ -1,5 +1,5 @@
-import { litVars } from "@emmanuel-defreitas/specular"
-import { Rim, usePointerLight } from "@emmanuel-defreitas/specular/react"
+import { litVars } from "@exegia/specular"
+import { Rim, usePointerLight } from "@exegia/specular/react"
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 
 import { cn } from "./lib/cn.ts"
@@ -142,10 +142,10 @@ function Snippet({ children }: { children: string }) {
 }
 
 const APPLY = `# 1. install
-npm i @emmanuel-defreitas/specular
+npm i @exegia/specular
 
 // 2. declare surfaces — bezel.config.ts
-import { defineSurfaces } from "@emmanuel-defreitas/specular"
+import { defineSurfaces } from "@exegia/specular"
 export const surfaces = defineSurfaces({
   card: { layers: {
     lit: { inset: true, color: "#fff", y: 1, blur: 1, alpha: 70 },
@@ -153,7 +153,7 @@ export const surfaces = defineSurfaces({
 })
 
 // 3. tailwind.plugin.js
-import { createPlugin } from "@emmanuel-defreitas/specular/plugin"
+import { createPlugin } from "@exegia/specular/plugin"
 import { surfaces } from "./bezel.config"
 export default createPlugin(surfaces)
 
@@ -182,7 +182,7 @@ const CARD_TILES = [
  * components switch by surface name only. */
 const PRESETS = {
   card: `// flat — hairline light, ring, micro drop
-import { defineSurfaces } from "@emmanuel-defreitas/specular"
+import { defineSurfaces } from "@exegia/specular"
 export const surfaces = defineSurfaces({
   card: { layers: {
     lit: { inset: true, color: "#fff", y: 1, blur: 1, alpha: 70 },
@@ -191,7 +191,7 @@ export const surfaces = defineSurfaces({
   }},
 })`,
   raised: `// raised — same hairline + stacked contact/penumbra/umbra
-import { defineSurfaces } from "@emmanuel-defreitas/specular"
+import { defineSurfaces } from "@exegia/specular"
 export const surfaces = defineSurfaces({
   card: { layers: {
     lit:      { inset: true,  color: "#fff", y: 1,  blur: 1,  alpha: 70 },
@@ -211,7 +211,7 @@ export function App() {
       <header className="grid gap-3">
         <div className="flex items-center gap-3">
           <div className="inline-flex w-fit items-center gap-2 rounded-full bg-stone-200 px-3 py-1 font-mono text-[11px] text-stone-600 bezel-base dark:bg-neutral-800 dark:text-neutral-400">
-            @emmanuel-defreitas/specular · demo
+            @exegia/specular · demo
           </div>
           <ThemeToggle dark={dark} onToggle={toggleTheme} />
         </div>

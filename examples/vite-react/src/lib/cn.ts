@@ -3,7 +3,7 @@
  * files `bezel-lit-t-2` under the core `shadow` group and would drop it in
  * favour of `bezel-dim-b-1`; `createCn` knows every utility the plugin emits.
  */
-import { createCn } from "@emmanuel-defreitas/specular/merge"
+import { createCn } from "@exegia/specular/merge"
 
 import { surfaces } from "../../specular.config.ts"
 

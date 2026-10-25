@@ -97,7 +97,7 @@ export function Merge() {
           there is no default preset or separate options object. Static className strings do not need this step.
         </p>
         <Code>{`// src/lib/cn.ts
-import { createCn } from "@emmanuel-defreitas/specular/merge"
+import { createCn } from "@exegia/specular/merge"
 import { surfaces } from "../../specular.config.ts"
 
 export const cn = createCn(surfaces)`}</Code>
@@ -111,7 +111,7 @@ export const cn = createCn(surfaces)`}</Code>
         title="Try it"
         description="Two class strings go in; the stock merge and the generated one come out. Struck-through classes were dropped."
         code={`
-import { createCn } from "@emmanuel-defreitas/specular/merge"
+import { createCn } from "@exegia/specular/merge"
 import { surfaces } from "./specular.config"
 export const cn = createCn(surfaces)          // accepts strings, arrays, falsy — like twMerge`}
       >

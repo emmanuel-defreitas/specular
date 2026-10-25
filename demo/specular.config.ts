@@ -1,4 +1,4 @@
-import { defineSurfaces } from "@emmanuel-defreitas/specular";
+import { defineSurfaces } from "@exegia/specular";
 
 /**
  * Shape-class surfaces in the lab01.dev lighting language: inset hairline

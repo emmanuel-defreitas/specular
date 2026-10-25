@@ -1,4 +1,4 @@
-import { usePointerLight } from "@emmanuel-defreitas/specular/react"
+import { usePointerLight } from "@exegia/specular/react"
 import { useRef, useState } from "react"
 import { Code } from "../components/Code.tsx"
 import { Section } from "../components/Section.tsx"
@@ -53,7 +53,7 @@ export function Playground({ dark }: { dark: boolean }) {
       </div>
       <div className="min-w-0 space-y-4">
         <div className="flex gap-2" aria-label="Code format">{(["CSS", "Tailwind", "GPUI"] as const).map((name) => <button key={name} type="button" aria-pressed={format === name} onClick={() => setFormat(name)} className={`rounded-lg px-4 py-2 text-sm ${format === name ? "bg-stone-800 text-white dark:bg-neutral-200 dark:text-neutral-900" : "bg-stone-200 dark:bg-neutral-800"}`}>{name}</button>)}</div>
-        <p className="text-xs text-stone-500 dark:text-neutral-400">Exporting the current {mode} settings. {format === "GPUI" ? "Native inset shadows; code only. Browser and GPUI blur may differ slightly. Requires GPUI with BoxShadow::inset (verified against gpui-pre 0.3.8)." : format === "Tailwind" ? "Requires Tailwind v4 and @emmanuel-defreitas/specular. Copy each labeled block into its file." : "Standalone CSS. No library or plugin required."}</p>
+        <p className="text-xs text-stone-500 dark:text-neutral-400">Exporting the current {mode} settings. {format === "GPUI" ? "Native inset shadows; code only. Browser and GPUI blur may differ slightly. Requires GPUI with BoxShadow::inset (verified against gpui-pre 0.3.8)." : format === "Tailwind" ? "Requires Tailwind v4 and @exegia/specular. Copy each labeled block into its file." : "Standalone CSS. No library or plugin required."}</p>
         <Code language={format === "CSS" ? "css" : format === "GPUI" ? "rust" : "tsx"} alwaysShowCopy>{code}</Code>
       </div>
     </div>
