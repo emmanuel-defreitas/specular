@@ -19,7 +19,7 @@ export function cssCode(surface: Surface) {
 }
 export function tailwindCode(surface: Surface) {
   const layer = (value: Layer) => `{ color: "${value.color}", x: ${value.x}, y: ${value.y}, blur: ${value.blur}, spread: ${value.spread}, alpha: ${value.alpha} }`
-  return `// specular.config.ts\nimport { defineSurfaces } from "@exegia/specular"\n\nexport const surfaces = defineSurfaces({\n  custom: { layers: {\n    lit: ${layer(surface.lit)},\n    dim: ${layer(surface.dim)},\n  } },\n})\n\n// specular.plugin.ts\nimport { createPlugin } from "@exegia/specular/plugin"\nimport { surfaces } from "./specular.config.ts"\nexport default createPlugin(surfaces)\n\n/* app.css — adjust the plugin path to your CSS file */\n@import "tailwindcss";\n@plugin "./specular.plugin.ts";\n\n<!-- markup -->\n<div class="size-[${surface.size}px] rounded-[${surface.radius}px] bg-[${surface.fill}] custom-base"></div>`
+  return `// specular.config.ts\nimport { defineSurfaces } from "@emmanuel-defreitas/specular"\n\nexport const surfaces = defineSurfaces({\n  custom: { layers: {\n    lit: ${layer(surface.lit)},\n    dim: ${layer(surface.dim)},\n  } },\n})\n\n// specular.plugin.ts\nimport { createPlugin } from "@emmanuel-defreitas/specular/plugin"\nimport { surfaces } from "./specular.config.ts"\nexport default createPlugin(surfaces)\n\n/* app.css — adjust the plugin path to your CSS file */\n@import "tailwindcss";\n@plugin "./specular.plugin.ts";\n\n<!-- markup -->\n<div class="size-[${surface.size}px] rounded-[${surface.radius}px] bg-[${surface.fill}] custom-base"></div>`
 }
 export function gpuiCode(surface: Surface) {
   const num = (value: number) => Number.isInteger(value) ? `${value}.0` : String(value)

@@ -1,6 +1,6 @@
 "use client"
 
-import { Rim, usePointerLight } from "@exegia/specular/react"
+import { Rim, usePointerLight } from "@emmanuel-defreitas/specular/react"
 import { Star } from "lucide-react"
 import { useRef } from "react"
 
@@ -30,7 +30,7 @@ export function Hero() {
       <div className="max-w-xl">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-stone-200 px-3 py-1 font-mono text-[11px] text-stone-600 bezel-base dark:bg-neutral-800 dark:text-neutral-400">
           <img className="size-3 dark:invert" src="https://github.githubassets.com/favicons/favicon.svg" alt="" />
-          @exegia/specular · Tailwind v4 · React 19
+          @emmanuel-defreitas/specular · Tailwind v4 · React 19
         </div>
         <h1 className="text-5xl font-semibold tracking-tight text-stone-900 sm:text-6xl dark:text-white">
           Light that follows <span className="text-stone-500 dark:text-neutral-500">the cursor.</span>
@@ -60,7 +60,7 @@ export function Hero() {
         <div className="mt-8 grid gap-4">
           <div className="grid gap-2">
             <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">1. Install</p>
-            <Code>{`bun add @exegia/specular`}</Code>
+            <Code>{`bun add @emmanuel-defreitas/specular`}</Code>
           </div>
           <div className="grid gap-2">
             <p className="font-mono text-xs font-medium text-stone-500 dark:text-neutral-500">React quick start · no Specular plugin needed</p>
@@ -68,7 +68,7 @@ export function Hero() {
 "use client"
 
 import { useRef } from "react"
-import { Rim, usePointerLight } from "@exegia/specular/react"
+import { Rim, usePointerLight } from "@emmanuel-defreitas/specular/react"
 
 function Orb() {
   const ref = useRef<HTMLDivElement>(null)
