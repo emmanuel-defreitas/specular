@@ -1,8 +1,8 @@
 {
-  "name": "@exegia/specular-example-vite",
+  "name": "@emmanuel-defreitas/specular-example-vite",
   "private": true,
   "version": "0.0.0",
-  "description": "Showcase for @exegia/specular: bezels, colours, intensity, and pointer-lit rims in a Vite + React + Tailwind v4 app.",
+  "description": "Showcase for @emmanuel-defreitas/specular: bezels, colours, intensity, and pointer-lit rims in a Vite + React + Tailwind v4 app.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@exegia/specular": "file:../..",
+    "@emmanuel-defreitas/specular": "file:../..",
     "lucide-react": "^1.45.0",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.8",
