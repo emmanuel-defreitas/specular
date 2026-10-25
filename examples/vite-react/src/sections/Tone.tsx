@@ -1,6 +1,6 @@
 "use client"
 
-import { toneToAlphas, useRimTone } from "@emmanuel-defreitas/specular/react"
+import { toneToAlphas, useRimTone } from "@exegia/specular/react"
 
 import { Chip } from "../components/Code.tsx"
 import { Demo } from "../components/Demo.tsx"
@@ -42,7 +42,7 @@ export function Tone() {
       }
     >
       <div className="max-w-2xl space-y-3 text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
-        <p>These helpers are optional and come from @emmanuel-defreitas/specular/react. Neither Rim nor pointer tracking needs image sampling.</p>
+        <p>These helpers are optional and come from @exegia/specular/react. Neither Rim nor pointer tracking needs image sampling.</p>
         <p>useRimTone(src) returns brightness as React state. For manual measurement, use await measureRimTone(src) instead of the hook.
           Both return null when sampling is unavailable, including when a remote image host does not allow CORS. The image can still display.</p>
         <p>toneToAlphas(tone) converts brightness to hi and lo props: 0.7 / 0.6 for a dark edge, 1 / 0.2 for a light edge,
