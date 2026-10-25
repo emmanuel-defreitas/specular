@@ -20,11 +20,134 @@ Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + Rea
 
 ## Native Rust / GPUI
 
-The companion [`gpui-specular`](crates/gpui-specular/README.md) crate provides native inset lighting, light/dark presets, a `.specular(...)` style extension, and pointer-angle helpers. It targets `gpui-pre 0.3.8` and is available as a local path dependency; it is not published yet.
+[`gpui-specular`](https://crates.io/crates/gpui-specular) provides native inset lighting and pointer-following bezels. It uses GPUI directly; no Tailwind, React or web view is needed.
+
+### 1. Install the Rust dependencies
+
+In your app's `Cargo.toml`:
+
+```toml
+[dependencies]
+gpui = { package = "gpui-pre", version = "=0.3.8", default-features = false }
+gpui_platform = { package = "gpui-pre-platform", version = "=0.3.8", default-features = false, features = ["font-kit"] }
+gpui-specular = "0.1.0"
+```
+
+Use the same GPUI package/version throughout your app: types from `gpui`, a Git checkout, and `gpui-pre` are not interchangeable. This setup targets macOS. On Linux, enable `x11` or `wayland` on `gpui_platform` and install GPUI's native system dependencies. Linux and Windows have not been validated here.
+
+### 2. Add a static bezel
+
+```rust
+use gpui::{div, px, rgb, Styled};
+use gpui_specular::{SpecularExt, Surface};
+
+let tile = div()
+    .size(px(160.0))
+    .rounded(px(32.0))
+    .bg(rgb(0x404040))
+    .specular(Surface::dark());
+```
+
+Use `Surface::light()` for light fills. `.specular(...)` replaces the element's shadow list; your app owns its fill, radius and theme. Custom `Layer` alpha is **0–1**, not the TypeScript config's 0–100 percentages. See the [crate guide](crates/gpui-specular/README.md) for layer configuration.
+
+### 3. Make the light follow the mouse
+
+Store the angle in your view. Handle mouse movement on the surrounding container, calculate the bearing to the **surface center**, then call `cx.notify()` to render the updated angle. The complete `src/main.rs` below centers the tile in the window; move the mouse to aim the light, and click the tile to switch themes.
+
+```rust
+use gpui::{
+    App, Bounds, Context, MouseMoveEvent, Window, WindowBounds, WindowOptions, div, point,
+    prelude::*, px, rgb, size,
+};
+use gpui_specular::{SpecularExt, Surface, pointer_angle};
+
+struct Demo {
+    angle: f32,
+    dark: bool,
+}
+
+impl Render for Demo {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let surface = if self.dark {
+            Surface::dark()
+        } else {
+            Surface::light()
+        };
+        div()
+            .id("bezel-demo")
+            .size_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .bg(rgb(if self.dark { 0x171717 } else { 0xf5f5f4 }))
+            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, window, cx| {
+                let viewport = window.viewport_size();
+                let center = point(viewport.width / 2.0, viewport.height / 2.0);
+                if let Some(angle) = pointer_angle(event.position, center) {
+                    this.angle = angle;
+                    cx.notify();
+                }
+            }))
+            .child(
+                div()
+                    .id("surface")
+                    .size(px(180.0))
+                    .rounded(px(36.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .bg(rgb(if self.dark { 0x404040 } else { 0xd6d3d1 }))
+                    .text_color(rgb(if self.dark { 0xe5e5e5 } else { 0x404040 }))
+                    .specular(surface.rotated(self.angle))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        this.dark = !this.dark;
+                        cx.notify();
+                    }))
+                    .child("Click to switch theme"),
+            )
+    }
+}
+
+fn main() {
+    gpui_platform::application().run(|cx: &mut App| {
+        cx.on_window_closed(|cx, _| {
+            if cx.windows().is_empty() {
+                cx.quit();
+            }
+        })
+        .detach();
+        let bounds = Bounds::centered(None, size(px(520.0), px(420.0)), cx);
+        cx.open_window(
+            WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                ..Default::default()
+            },
+            |_, cx| {
+                cx.new(|_| Demo {
+                    angle: 0.0,
+                    dark: true,
+                })
+            },
+        )
+        .expect("open the Specular demo window");
+        cx.activate(true);
+    });
+}
+```
+
+Run your app with `cargo run`. To try the checked-in example from this repository:
 
 ```bash
 cargo run -p gpui-specular --example bezel
 ```
+
+**Coordinate rule:** `event.position` and the surface center must both be in window coordinates. `window.viewport_size() / 2` works here only because the tile is centered in a full-window container. For tiles elsewhere, use their actual layout bounds; do not reuse the window center. Attaching the handler to the surrounding container lets tracking continue outside the tile.
+
+`pointer_angle` returns 0° above the center and 90° to its right. At the exact center it returns `None`, so the example preserves the previous angle. Always call `.rotated(angle)` on the original surface, not on the previous frame's rotated surface.
+
+**Optional smoothing:** the example tracks immediately. For gradual motion, store a target angle on mouse movement and call `damp_angle(current, target, amount)` on animation frames. Use `amount = 1.0 - (-dt_seconds / 0.12).exp()` for a 120 ms response, call `cx.notify()`, and request the next frame only until settled. Updating only on mouse events will stop easing as soon as the pointer stops. Your app owns frame scheduling and reduced-motion preferences; keep the surface static when motion is disabled.
+
+This crate currently supplies inset lighting and direction helpers. Image-overlay rims and image-tone sampling remain web-only.
 
 ## Install
 
