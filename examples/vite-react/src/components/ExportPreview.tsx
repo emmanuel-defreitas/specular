@@ -7,7 +7,7 @@ export type PreviewKind = "surface" | "plugin" | "merge" | "react"
 
 const PRESETS = [
   { name: "bezel", className: "bezel-base", description: "Inset highlight + shade" },
-  { name: "card", className: "card-base", description: "Inset edge + outer shadow" },
+  { name: "edge", className: "bezel-lit-t-1 bezel-lit-blur-0 bezel-dim/0", description: "A crisp inset highlight, with no drop shadow" },
   { name: "well", className: "well-base", description: "Recessed shade + lower lip" },
 ] as const
 
@@ -51,13 +51,13 @@ function PluginPreview() {
 
 function MergePreview() {
   const [strong, setStrong] = useState(true)
-  const override = strong ? "bezel-lit/80" : "bezel-lit/20"
-  const result = cn("bezel-lit/40", override)
+  const override = strong ? "bezel-lit/18" : "bezel-lit/5"
+  const result = cn("bezel-lit/10", override)
   return (
     <>
       <button type="button" aria-pressed={strong} onClick={() => setStrong(!strong)} className="text-xs underline underline-offset-4">Toggle the final class</button>
       <div className="flex items-center justify-center gap-5">
-        <code className="text-xs leading-6"><span className="text-stone-500 line-through">bezel-lit/40</span><br />{override}</code>
+        <code className="text-xs leading-6"><span className="text-stone-500 line-through">bezel-lit/10</span><br />{override}</code>
         <span aria-hidden="true">→</span>
         <div className={cn("size-16 rounded-full bg-stone-300 dark:bg-neutral-700", result)} aria-hidden="true" />
       </div>
@@ -69,17 +69,17 @@ function MergePreview() {
 
 function ReactPreview() {
   const ref = useRef<HTMLDivElement>(null)
-  const angle = usePointerLight(ref, { damping: 0.4 })
+  const angle = usePointerLight(ref, { damping: 0.08 })
   return (
     <>
       <p className="text-xs">Move your pointer around the rims</p>
       <div className="flex justify-center gap-10">
         <div className="space-y-2">
-          <div className="relative size-16 rounded-full bg-stone-400 dark:bg-neutral-600"><Rim hi={0.8} lo={0.4} className="rounded-full" /></div>
+          <div className="relative size-16 rounded-full bg-stone-400 dark:bg-neutral-600"><Rim className="rounded-full" /></div>
           <p className="text-xs">Rim</p>
         </div>
         <div className="space-y-2">
-          <div ref={ref} className="relative size-16 rounded-full bg-stone-400 dark:bg-neutral-600"><Rim angle={angle} hi={0.8} lo={0.4} className="rounded-full" /></div>
+          <div ref={ref} className="relative size-16 rounded-full bg-stone-400 dark:bg-neutral-600"><Rim angle={angle} className="rounded-full" /></div>
           <p className="text-xs">+ pointer</p>
         </div>
       </div>

@@ -18,6 +18,14 @@ Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + Rea
 
 ---
 
+## Native Rust / GPUI
+
+The companion [`gpui-specular`](crates/gpui-specular/README.md) crate provides native inset lighting, light/dark presets, a `.specular(...)` style extension, and pointer-angle helpers. It targets `gpui-pre 0.3.8` and is available as a local path dependency; it is not published yet.
+
+```bash
+cargo run -p gpui-specular --example bezel
+```
+
 ## Install
 
 ```bash
