@@ -4,3 +4,6 @@ dist/
 dist-pack/
 *.tgz
 .remember/
+
+# Rust workspace build artifacts
+/target/

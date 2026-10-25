@@ -10,10 +10,12 @@ import { Direction } from "./sections/Direction.tsx"
 import { Hero } from "./sections/Hero.tsx"
 import { Intensity } from "./sections/Intensity.tsx"
 import { Merge } from "./sections/Merge.tsx"
+import { Playground } from "./sections/Playground.tsx"
 import { Setup } from "./sections/Setup.tsx"
 import { Tone } from "./sections/Tone.tsx"
 
 const NAV = [
+  ["playground", "Playground"],
   ["setup", "Setup"],
   ["basics", "Surfaces"],
   ["direction", "Direction"],
@@ -110,6 +112,7 @@ export function App() {
       </header>
       <main className="mx-auto max-w-6xl px-6">
         <Hero />
+        <Playground dark={dark} />
         <Setup />
         <Basics />
         <Direction />

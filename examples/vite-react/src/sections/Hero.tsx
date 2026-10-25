@@ -15,7 +15,7 @@ function Orb() {
     <div className="flex flex-col items-center gap-4">
       <div
         ref={ref}
-        className="relative size-44 rounded-full bg-[radial-gradient(circle_at_38%_32%,#fafaf9,#a8a29e_70%,#78716c)] bezel-lit/90 bezel-lit-t-3 bezel-lit-blur-4 bezel-dim/30 bezel-dim-b-2 bezel-dim-blur-4 sm:size-56 dark:bg-[radial-gradient(circle_at_38%_32%,#525252,#262626_70%,#171717)]"
+        className="relative size-44 rounded-full bg-[radial-gradient(circle_at_38%_32%,#fafaf9,#a8a29e_70%,#78716c)] bezel-lit/90 dark:bezel-lit/16 bezel-lit-t-3 bezel-lit-blur-4 bezel-dim/30 bezel-dim-b-2 bezel-dim-blur-4 sm:size-56 dark:bg-[radial-gradient(circle_at_38%_32%,#525252,#262626_70%,#171717)]"
       >
         <Rim angle={angle * 0.8} className="rounded-full" />
       </div>
