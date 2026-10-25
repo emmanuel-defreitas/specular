@@ -4,14 +4,14 @@ Native inset highlights and shadows for GPUI, from the Specular project.
 A small, synchronous styling library: no web view, CSS engine, global listener,
 or animation runtime.
 
-## Use locally
+## Install
 
-This crate is not published yet. From a consuming application:
+Add these dependencies to a consuming application:
 
 ```toml
 [dependencies]
 gpui = { package = "gpui-pre", version = "=0.3.8", default-features = false }
-gpui-specular = { path = "../specular/crates/gpui-specular" }
+gpui-specular = "0.1.0"
 ```
 
 Use the same GPUI package/version in the application. Rust types from a different
@@ -65,30 +65,102 @@ with zero. `surface.shadows()` returns native `Vec<BoxShadow>` in GPUI paint ord
 
 ## Follow the pointer
 
-Calculate a bearing from the pointer and the surface center using **the same
-window coordinate system**:
+For a new macOS app, also add `gpui_platform = { package = "gpui-pre-platform", version = "=0.3.8", default-features = false, features = ["font-kit"] }` to `[dependencies]`. Existing apps can keep their matching GPUI platform setup.
+
+Store the angle in your view. Handle mouse movement on the surrounding container, calculate the bearing to the **surface center**, then call `cx.notify()` to render the updated angle. The complete `src/main.rs` below centers the tile in the window; move the mouse to aim the light, and click the tile to switch themes.
 
 ```rust
-use gpui::{point, px};
-use gpui_specular::{pointer_angle, Surface};
+use gpui::{
+    App, Bounds, Context, MouseMoveEvent, Window, WindowBounds, WindowOptions, div, point,
+    prelude::*, px, rgb, size,
+};
+use gpui_specular::{SpecularExt, Surface, pointer_angle};
 
-let pointer = point(px(200.0), px(100.0));
-let center = point(px(100.0), px(100.0));
-let angle = pointer_angle(pointer, center).unwrap_or(0.0);
-let surface = Surface::dark().rotated(angle);
+struct Demo {
+    angle: f32,
+    dark: bool,
+}
+
+impl Render for Demo {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let surface = if self.dark {
+            Surface::dark()
+        } else {
+            Surface::light()
+        };
+        div()
+            .id("bezel-demo")
+            .size_full()
+            .flex()
+            .items_center()
+            .justify_center()
+            .bg(rgb(if self.dark { 0x171717 } else { 0xf5f5f4 }))
+            .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, window, cx| {
+                let viewport = window.viewport_size();
+                let center = point(viewport.width / 2.0, viewport.height / 2.0);
+                if let Some(angle) = pointer_angle(event.position, center) {
+                    this.angle = angle;
+                    cx.notify();
+                }
+            }))
+            .child(
+                div()
+                    .id("surface")
+                    .size(px(180.0))
+                    .rounded(px(36.0))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .bg(rgb(if self.dark { 0x404040 } else { 0xd6d3d1 }))
+                    .text_color(rgb(if self.dark { 0xe5e5e5 } else { 0x404040 }))
+                    .specular(surface.rotated(self.angle))
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        this.dark = !this.dark;
+                        cx.notify();
+                    }))
+                    .child("Click to switch theme"),
+            )
+    }
+}
+
+fn main() {
+    gpui_platform::application().run(|cx: &mut App| {
+        cx.on_window_closed(|cx, _| {
+            if cx.windows().is_empty() {
+                cx.quit();
+            }
+        })
+        .detach();
+        let bounds = Bounds::centered(None, size(px(520.0), px(420.0)), cx);
+        cx.open_window(
+            WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                ..Default::default()
+            },
+            |_, cx| {
+                cx.new(|_| Demo {
+                    angle: 0.0,
+                    dark: true,
+                })
+            },
+        )
+        .expect("open the Specular demo window");
+        cx.activate(true);
+    });
+}
 ```
 
-With the presets, 0° lights the top and 90° lights the right. Rotation preserves
-configured offset lengths and rotates both layers together. At the exact center,
-`pointer_angle` returns `None`; keep the previous angle. Rotate the original
-surface on every render, not the previous frame's result.
+Run your app with `cargo run`. To try the checked-in example from this repository:
 
-For smooth tracking, `damp_angle(current, target, amount)` interpolates along the
-shortest arc, including across 360°. Drive it from your app's animation frames,
-notify the view while unsettled, and stop requesting frames once settled. For
-frame-rate-independent damping, use `amount = 1.0 - (-dt_seconds / 0.12).exp()`.
-The app owns animation scheduling and reduced-motion behavior; use a static
-surface when motion is disabled.
+```bash
+cargo run -p gpui-specular --example bezel
+```
+
+**Coordinate rule:** `event.position` and the surface center must both be in window coordinates. `window.viewport_size() / 2` works here only because the tile is centered in a full-window container. For tiles elsewhere, use their actual layout bounds; do not reuse the window center. Attaching the handler to the surrounding container lets tracking continue outside the tile.
+
+`pointer_angle` returns 0° above the center and 90° to its right. At the exact center it returns `None`, so the example preserves the previous angle. Always call `.rotated(angle)` on the original surface, not on the previous frame's rotated surface.
+
+**Optional smoothing:** the example tracks immediately. For gradual motion, store a target angle on mouse movement and call `damp_angle(current, target, amount)` on animation frames. Use `amount = 1.0 - (-dt_seconds / 0.12).exp()` for a 120 ms response, call `cx.notify()`, and request the next frame only until settled. Updating only on mouse events will stop easing as soon as the pointer stops. Your app owns frame scheduling and reduced-motion preferences; keep the surface static when motion is disabled.
 
 ## Native example and checks
 
