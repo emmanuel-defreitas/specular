@@ -4,8 +4,8 @@
 # Tag-driven. The version was chosen when next.yml cut release/vX.Y.Z and
 # wrote it into package.json; release.yml turned that into the tag.
 #
-# Publishes with provenance. Needs `NPM_TOKEN` (an automation token for the
-# @exegia scope) — or switch to npm trusted publishing and drop the secret.
+# Publishes with provenance using npm trusted publishing (GitHub OIDC).
+# npm trusts this repository and publish.yml; no npm token is required.
 name: Publish
 
 on:
@@ -80,13 +80,8 @@ jobs:
           path: dist-pack
 
       - name: Publish the tarball
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -eu
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "::error::NPM_TOKEN is not set — add it under Settings → Secrets and variables → Actions"; exit 1
-          fi
           # `./` matters: npm parses a bare `a/b` argument as its GitHub
           # owner/repo shorthand, so `dist-pack/x.tgz` becomes a git clone
           # attempt, not a file. A leading `./` forces the path reading.
