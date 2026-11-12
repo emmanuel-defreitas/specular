@@ -53,9 +53,10 @@
       .cta-line { position: absolute; left: 84px; right: 84px; top: 735px; text-align: center; font: 400 43px/1.35 Inter, sans-serif; color: #d6d3d1; }
       .cta-command { position: absolute; left: 92px; right: 92px; top: 1005px; height: 112px; border: 1px solid #44403c; border-radius: 22px; background: #292524; display: flex; align-items: center; justify-content: center; gap: 20px; font: 400 37px JetBrains, monospace; }
       #cargo-command { top: 1140px; }
+      #swift-command { top: 1275px; height: 150px; flex-direction: column; gap: 10px; font-size: 28px; }
       .cta-command .prompt { color: #a8a29e; }
       .cta-command .package { color: #00bc7d; }
-      .cta-meta { position: absolute; left: 0; right: 0; top: 1315px; text-align: center; font: 400 25px JetBrains, monospace; color: #a8a29e; }
+      .cta-meta { position: absolute; left: 0; right: 0; top: 1488px; text-align: center; font: 400 25px JetBrains, monospace; color: #a8a29e; }
       .cta-bottom { position: absolute; left: 84px; right: 84px; bottom: 93px; display: flex; justify-content: space-between; font: 400 25px JetBrains, monospace; color: #a8a29e; }
       .cta-bottom span:last-child { color: #00bc7d; }
     </style>
@@ -84,6 +85,7 @@
         <div class="cta-line">Light that moves with you.</div>
         <div class="cta-command"><span class="prompt">$ bun add</span><span class="package">@exegia/specular</span></div>
         <div id="cargo-command" class="cta-command"><span class="prompt">$ cargo add</span><span class="package">gpui-specular</span></div>
+        <div id="swift-command" class="cta-command"><span class="prompt">$ swift package add-dependency --from 0.4.0</span><span class="package">https://github.com/emmanuel-defreitas/specular</span></div>
         <div class="cta-meta">Tailwind v4 · React · GPUI · SwiftUI · MIT</div>
         <div class="cta-bottom"><span>BUILD WITH LIGHT</span><span>↗</span></div>
       </section>
