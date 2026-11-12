@@ -63,6 +63,21 @@ example-build: build example-install ## Typecheck and build the example app agai
 example-dev: build example-install ## Build the library, then start the example's Vite dev server.
 	@cd $(EXAMPLE_DIR) && npm run dev
 
+# ── Swift package ────────────────────────────────────────────────────────────
+# Package.swift sits at the root so SwiftPM can resolve the repo by URL; the
+# sources live in swift/. macOS only: the tests render through AppKit.
+
+.PHONY: swift-build swift-test swift-demo
+
+swift-build: ## Build the Specular Swift package and its demo.
+	@swift build
+
+swift-test: ## Run the Swift package tests.
+	@swift test
+
+swift-demo: ## Run the SwiftUI demo app (macOS).
+	@swift run SpecularDemo
+
 # ── Release pipeline ──────────────────────────────────────────────────────────
 # The branch model lives in .github/WORKFLOW.md. Every CI step is one target
 # here, so anything the pipeline does can be reproduced locally.
