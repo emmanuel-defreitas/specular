@@ -5,7 +5,7 @@ import { useState } from "react"
 
 const stoneNightOwl = { ...themes.nightOwl, plain: { ...themes.nightOwl.plain, backgroundColor: "transparent" } }
 
-export function Code({ children, className, language = "tsx", alwaysShowCopy = false }: { children: string; className?: string; language?: "tsx" | "css" | "rust"; alwaysShowCopy?: boolean }) {
+export function Code({ children, className, language = "tsx", alwaysShowCopy = false }: { children: string; className?: string; language?: "tsx" | "css" | "rust" | "swift"; alwaysShowCopy?: boolean }) {
   const code = children.trim()
   const [copied, setCopied] = useState(false)
 
@@ -54,7 +54,7 @@ export function Code({ children, className, language = "tsx", alwaysShowCopy = f
 }
 
 /** An inline class-name label under a swatch. */
-export function Chip({ children, className, language = "tsx", alwaysShowCopy = false }: { children: string; className?: string; language?: "tsx" | "css" | "rust"; alwaysShowCopy?: boolean }) {
+export function Chip({ children, className, language = "tsx", alwaysShowCopy = false }: { children: string; className?: string; language?: "tsx" | "css" | "rust" | "swift"; alwaysShowCopy?: boolean }) {
   return (
     <code
       className={cn(
