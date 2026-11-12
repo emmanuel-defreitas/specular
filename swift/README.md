@@ -14,16 +14,15 @@ repository root and shares its version tags with the npm package:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/emmanuel-defreitas/specular.git", branch: "dev"),
+    .package(url: "https://github.com/emmanuel-defreitas/specular.git", from: "0.4.0"),
 ],
 targets: [
     .target(name: "App", dependencies: [.product(name: "Specular", package: "specular")]),
 ]
 ```
 
-Once a tagged release includes the Swift package, depend on it with
-`from: "<version>"` instead of `branch:`. In Xcode, use **File › Add Package
-Dependencies…** and paste the same URL.
+0.4.0 is the first release with the Swift package. In Xcode, use **File › Add
+Package Dependencies…** and paste the same URL.
 
 ## Light a shape
 
