@@ -7,3 +7,7 @@ dist-pack/
 
 # Rust workspace build artifacts
 /target/
+
+# SwiftPM build artifacts
+/.build/
+/.swiftpm/

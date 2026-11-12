@@ -85,6 +85,16 @@ jobs:
           path: dist-pack/
           if-no-files-found: error
 
+  # The SwiftUI package. Its tests render real views and read pixels back,
+  # so they need a macOS runner.
+  swift:
+    name: swift
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: make swift-test
+
   review:
     name: review
     needs: guard
