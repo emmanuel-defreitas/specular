@@ -140,8 +140,9 @@ swift run SpecularDemo   # move the pointer; click the square to switch themes
 swift test
 ```
 
-The tests cover the maths and also render real views, reading pixels back to
-check which edge is lit at each angle and that the light follows the shared
-pointer.
+The tests cover the maths and the pointer aiming, and render real views,
+reading pixels back to check which edge is lit at each angle. A hosted-window
+test that moves the shared pointer runs locally but is skipped on CI, where
+headless runners don't update offscreen SwiftUI windows.
 
 MIT. See [LICENSE](../LICENSE).

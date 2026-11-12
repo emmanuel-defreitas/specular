@@ -90,11 +90,18 @@ struct SpecularModifier<S: Shape>: ViewModifier {
     }
 
     private func aim() {
-        guard follows, let frame, let pointer,
-              let bearing = SpecularLight.bearing(of: pointer, from: CGPoint(x: frame.midX, y: frame.midY)),
-              let next = SpecularLight.unwrap(angle, toward: bearing.degrees)
-        else { return }
+        guard follows, let next = Self.aimed(angle, frame: frame, pointer: pointer) else { return }
         angle = next
+    }
+
+    /// The next continuous angle for a surface at `frame` lit from
+    /// `pointer`, both global. `nil` while either is unknown, at the exact
+    /// center, or for a move under `SpecularLight.angleEpsilon`.
+    nonisolated static func aimed(_ angle: Double?, frame: CGRect?, pointer: CGPoint?) -> Double? {
+        guard let frame, let pointer,
+              let bearing = SpecularLight.bearing(of: pointer, from: CGPoint(x: frame.midX, y: frame.midY))
+        else { return nil }
+        return SpecularLight.unwrap(angle, toward: bearing.degrees)
     }
 }
 

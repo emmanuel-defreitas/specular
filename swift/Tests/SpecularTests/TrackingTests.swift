@@ -7,7 +7,10 @@ import Testing
 
 /// Hosts a live view so geometry and change handlers run, then moves the
 /// shared pointer the way `.specularPointer()` does and reads pixels back.
-@MainActor @Suite struct TrackingTests {
+/// Needs a GUI session: on a headless CI runner SwiftUI never updates an
+/// offscreen window, so the pure `AimTests` cover the logic there.
+@MainActor @Suite(.disabled(if: ProcessInfo.processInfo.environment["CI"] != nil, "needs a GUI session"))
+struct TrackingTests {
     let pointer = SpecularPointer()
     let host: NSHostingView<AnyView>
     let window: NSWindow

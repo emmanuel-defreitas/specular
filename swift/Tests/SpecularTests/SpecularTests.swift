@@ -64,6 +64,31 @@ import Testing
     }
 }
 
+@Suite struct AimTests {
+    typealias Aim = SpecularModifier<Rectangle>
+    let frame = CGRect(x: 100, y: 100, width: 40, height: 40)
+
+    @Test func aimsAtThePointerFromTheFrameCenter() {
+        #expect(Aim.aimed(nil, frame: frame, pointer: CGPoint(x: 500, y: 120)) == 90)
+        #expect(Aim.aimed(nil, frame: frame, pointer: CGPoint(x: 120, y: 500)) == 180)
+        #expect(Aim.aimed(nil, frame: frame, pointer: CGPoint(x: -500, y: 120)) == 270)
+    }
+
+    @Test func keepsTheAngleContinuousAcrossNorth() {
+        // From 350°, a pointer 10° past north lands at 370°, not back at 10°.
+        let pointer = CGPoint(x: 120 + 100 * sin(CGFloat.pi / 18), y: 120 - 100 * cos(CGFloat.pi / 18))
+        let next = Aim.aimed(350, frame: frame, pointer: pointer)
+        #expect(abs((next ?? 0) - 370) < 0.0001)
+    }
+
+    @Test func holdsWhenNothingIsKnownOrTheMoveIsTiny() {
+        #expect(Aim.aimed(nil, frame: nil, pointer: CGPoint(x: 0, y: 0)) == nil)
+        #expect(Aim.aimed(nil, frame: frame, pointer: nil) == nil)
+        #expect(Aim.aimed(nil, frame: frame, pointer: CGPoint(x: 120, y: 120)) == nil)
+        #expect(Aim.aimed(90, frame: frame, pointer: CGPoint(x: 500, y: 121)) == nil)
+    }
+}
+
 @Suite struct PathTests {
     @Test func insetShrinksAndNegativeInsetGrows() {
         let square = Path(CGRect(x: 0, y: 0, width: 40, height: 40))
