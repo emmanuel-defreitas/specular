@@ -2,7 +2,7 @@ import { usePointerLight } from "@exegia/specular/react"
 import { useRef, useState } from "react"
 import { Code } from "../components/Code.tsx"
 import { Section } from "../components/Section.tsx"
-import { boxShadow, cssCode, defaults, effectiveSurface, gpuiCode, tailwindCode, randomSurface, pointedSurface, type Layer } from "../lib/generator.ts"
+import { boxShadow, cssCode, defaults, effectiveSurface, gpuiCode, swiftuiCode, tailwindCode, randomSurface, pointedSurface, type Layer } from "../lib/generator.ts"
 
 function Slider({ label, value, min, max, onChange, unit = "px" }: { label: string; value: number; min: number; max: number; onChange: (value: number) => void; unit?: string }) {
   return <label className="grid grid-cols-[5rem_minmax(0,1fr)_3.5rem] items-center gap-3 text-xs">
@@ -16,7 +16,7 @@ function Color({ label, value, onChange }: { label: string; value: string; onCha
 
 export function Playground({ dark }: { dark: boolean }) {
   const [surfaces, setSurfaces] = useState({ light: defaults(false), dark: defaults(true) })
-  const [format, setFormat] = useState<"CSS" | "Tailwind" | "GPUI">("CSS")
+  const [format, setFormat] = useState<"CSS" | "Tailwind" | "GPUI" | "SwiftUI">("CSS")
   const [follow, setFollow] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
   const angle = usePointerLight(previewRef, { enabled: follow, damping: 0.08 })
@@ -25,9 +25,9 @@ export function Playground({ dark }: { dark: boolean }) {
   const update = (patch: Partial<typeof surface>) => setSurfaces((previous) => ({ ...previous, [mode]: { ...previous[mode], ...patch } }))
   const updateLayer = (name: "lit" | "dim", patch: Partial<Layer>) => update({ [name]: { ...surface[name], ...patch } })
   const previewSurface = follow ? pointedSurface(surface, angle) : surface
-  const code = format === "CSS" ? cssCode(surface) : format === "Tailwind" ? tailwindCode(surface) : gpuiCode(surface)
+  const code = format === "CSS" ? cssCode(surface) : format === "Tailwind" ? tailwindCode(surface) : format === "GPUI" ? gpuiCode(surface) : swiftuiCode(surface)
   return <Section id="playground" number="Playground" title="Shape the light. Take the code."
-    lede="Tune two inset layers, then copy the same surface as CSS, a Specular Tailwind config, or native Rust / GPUI. Light and dark settings are saved separately while you explore.">
+    lede="Tune two inset layers, then copy the same surface as CSS, a Specular Tailwind config, or native Rust / GPUI and SwiftUI. Light and dark settings are saved separately while you explore.">
     <div className="grid gap-8 lg:grid-cols-2">
       <div className="space-y-6">
         <div className="flex items-center justify-between gap-4 text-sm"><span>{dark ? "Dark" : "Light"} surface · live preview</span><button type="button" className="underline underline-offset-4" onClick={() => update(defaults(dark))}>Reset {mode}</button></div>
@@ -52,9 +52,9 @@ export function Playground({ dark }: { dark: boolean }) {
         <p className="text-xs leading-relaxed text-stone-500 dark:text-neutral-400">Positive Y lights the top edge; negative Y lights the bottom. Dark-mode highlight alpha is capped at 20%. Use the theme toggle to edit the other mode.</p>
       </div>
       <div className="min-w-0 space-y-4">
-        <div className="flex gap-2" aria-label="Code format">{(["CSS", "Tailwind", "GPUI"] as const).map((name) => <button key={name} type="button" aria-pressed={format === name} onClick={() => setFormat(name)} className={`rounded-lg px-4 py-2 text-sm ${format === name ? "bg-stone-800 text-white dark:bg-neutral-200 dark:text-neutral-900" : "bg-stone-200 dark:bg-neutral-800"}`}>{name}</button>)}</div>
-        <p className="text-xs text-stone-500 dark:text-neutral-400">Exporting the current {mode} settings. {format === "GPUI" ? "Native inset shadows; code only. Browser and GPUI blur may differ slightly. Requires GPUI with BoxShadow::inset (verified against gpui-pre 0.3.8)." : format === "Tailwind" ? "Requires Tailwind v4 and @exegia/specular. Copy each labeled block into its file." : "Standalone CSS. No library or plugin required."}</p>
-        <Code language={format === "CSS" ? "css" : format === "GPUI" ? "rust" : "tsx"} alwaysShowCopy>{code}</Code>
+        <div className="flex flex-wrap gap-2" aria-label="Code format">{(["CSS", "Tailwind", "GPUI", "SwiftUI"] as const).map((name) => <button key={name} type="button" aria-pressed={format === name} onClick={() => setFormat(name)} className={`rounded-lg px-4 py-2 text-sm ${format === name ? "bg-stone-800 text-white dark:bg-neutral-200 dark:text-neutral-900" : "bg-stone-200 dark:bg-neutral-800"}`}>{name}</button>)}</div>
+        <p className="text-xs text-stone-500 dark:text-neutral-400">Exporting the current {mode} settings. {format === "SwiftUI" ? "Requires the Specular Swift package (0.4.0+). Opacity is 0–1; blur keeps its CSS meaning, so values carry over. The layers paint above the view's content." : format === "GPUI" ? "Native inset shadows; code only. Browser and GPUI blur may differ slightly. Requires GPUI with BoxShadow::inset (verified against gpui-pre 0.3.8)." : format === "Tailwind" ? "Requires Tailwind v4 and @exegia/specular. Copy each labeled block into its file." : "Standalone CSS. No library or plugin required."}</p>
+        <Code language={format === "CSS" ? "css" : format === "GPUI" ? "rust" : format === "SwiftUI" ? "swift" : "tsx"} alwaysShowCopy>{code}</Code>
       </div>
     </div>
   </Section>

@@ -12,6 +12,7 @@ import { Intensity } from "./sections/Intensity.tsx"
 import { Merge } from "./sections/Merge.tsx"
 import { Playground } from "./sections/Playground.tsx"
 import { Setup } from "./sections/Setup.tsx"
+import { SwiftUI } from "./sections/SwiftUI.tsx"
 import { Tone } from "./sections/Tone.tsx"
 
 const NAV = [
@@ -24,6 +25,7 @@ const NAV = [
   ["alive", "Alive"],
   ["tone", "Tone"],
   ["merge", "cn()"],
+  ["swiftui", "SwiftUI"],
 ] as const
 
 export function App() {
@@ -69,7 +71,7 @@ export function App() {
   return (
     <>
       <header className="sticky top-0 z-10 border-b border-stone-300/60 bg-stone-100/80 backdrop-blur dark:border-neutral-700 dark:bg-neutral-900/80">
-        <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
           <a href="#top" className="flex items-center gap-2.5 font-semibold text-stone-900 dark:text-white">
             <img src={logo} className="size-6" alt="" />
             specular
@@ -80,7 +82,7 @@ export function App() {
                 key={id}
                 href={`#${id}`}
                 aria-current={active === id ? "page" : undefined}
-                className={`rounded-md px-2.5 py-1 transition-[background-color,color,box-shadow] duration-150 hover:bg-stone-200 hover:text-stone-900 dark:hover:bg-neutral-800 dark:hover:text-white ${active === id ? "bg-stone-200 text-stone-900 bezel-base dark:bg-neutral-800 dark:text-white" : ""}`}
+                className={`rounded-md px-2 py-1 whitespace-nowrap transition-[background-color,color,box-shadow] duration-150 hover:bg-stone-200 hover:text-stone-900 dark:hover:bg-neutral-800 dark:hover:text-white ${active === id ? "bg-stone-200 text-stone-900 bezel-base dark:bg-neutral-800 dark:text-white" : ""}`}
               >
                 {label}
               </a>
@@ -92,14 +94,14 @@ export function App() {
             }}>
               <a
                 href="https://github.com/emmanuel-defreitas"
-                className="flex items-center gap-2 rounded-full bg-stone-200 py-1 pr-3 pl-1 text-sm font-medium text-stone-700 bezel-base transition-[box-shadow,transform,color] duration-150 hover:-translate-y-px hover:text-stone-950 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:text-white"
+                className="flex shrink-0 items-center gap-2 rounded-full bg-stone-200 py-1 pr-3 pl-1 text-sm font-medium whitespace-nowrap text-stone-700 bezel-base transition-[box-shadow,transform,color] duration-150 hover:-translate-y-px hover:text-stone-950 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:text-white"
               >
                 <img className="size-6 rounded-full" src="https://github.com/emmanuel-defreitas.png?size=48" alt="" />
                 @emmanuel-defreitas
               </a>
               <div className={`absolute top-full right-0 mt-2 w-60 rounded-xl border border-stone-300/70 bg-stone-100 p-3 text-sm shadow-xl transition-[opacity,transform,visibility] duration-150 dark:border-neutral-700 dark:bg-neutral-900 ${profileOpen ? "visible pointer-events-auto translate-y-1 opacity-100" : "pointer-events-none invisible opacity-0"}`}>
                 <p className="font-medium text-stone-900 dark:text-white">Specular by Emmanuel Defreitas</p>
-                <p className="mt-1 text-xs leading-relaxed text-stone-600 dark:text-neutral-400">Tailwind v4 lighting utilities and pointer-following React rims.</p>
+                <p className="mt-1 text-xs leading-relaxed text-stone-600 dark:text-neutral-400">Tailwind v4 lighting utilities, pointer-following React rims, and native SwiftUI.</p>
                 <div className="mt-3 flex gap-3 text-xs font-medium">
                   <a href="https://github.com/emmanuel-defreitas" className="text-stone-700 hover:text-stone-950 dark:text-neutral-300 dark:hover:text-white">Profile</a>
                   <a href="https://github.com/emmanuel-defreitas/specular" className="text-stone-700 hover:text-stone-950 dark:text-neutral-300 dark:hover:text-white">Repository</a>
@@ -121,9 +123,10 @@ export function App() {
         <Alive />
         <Tone />
         <Merge />
+        <SwiftUI dark={dark} />
       </main>
       <footer className="border-t border-stone-300/60 py-10 text-center text-xs text-stone-500 dark:border-neutral-800 dark:text-neutral-500">
-        @exegia/specular · MIT · Tailwind bezels and React rim overlays
+        @exegia/specular · MIT · Tailwind bezels, React rim overlays and SwiftUI
       </footer>
     </>
   )
