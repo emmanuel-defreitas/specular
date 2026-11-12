@@ -1,0 +1,9 @@
+{
+  "name": "specular-pointer-reel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "npx --yes hyperframes@0.8.38 check",
+    "render": "npx --yes hyperframes@0.8.38 render"
+  }
+}

@@ -4,7 +4,7 @@
 
 # @exegia/specular
 
-Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + React.
+Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + React, with native ports for GPUI and SwiftUI.
 
 [npm](https://www.npmjs.com/package/@exegia/specular) · [live examples](https://emmanuel-defreitas.github.io/specular/) · [MIT](LICENSE)
 
@@ -13,6 +13,12 @@ Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + Rea
 </a>
 
 <sub>Six discs, one window listener. Explore the interactive presentation on the <a href="https://emmanuel-defreitas.github.io/specular/">example site</a>.</sub>
+
+<a href="examples/video/specular-pointer-reel/renders/specular-pointer-reel.mp4">
+  <img src="examples/video/specular-pointer-reel/snapshots/frame-01-at-4.3s.png" alt="Light that follows you: a disc's inset light turning toward the pointer" width="240">
+</a>
+
+<sub>▶ <a href="examples/video/specular-pointer-reel/renders/specular-pointer-reel.mp4">Watch the 15-second reel</a>, a vertical cut made with <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a>. Its source is in <a href="examples/video/specular-pointer-reel">examples/video</a>.</sub>
 
 </div>
 
@@ -148,6 +154,79 @@ cargo run -p gpui-specular --example bezel
 **Optional smoothing:** the example tracks immediately. For gradual motion, store a target angle on mouse movement and call `damp_angle(current, target, amount)` on animation frames. Use `amount = 1.0 - (-dt_seconds / 0.12).exp()` for a 120 ms response, call `cx.notify()`, and request the next frame only until settled. Updating only on mouse events will stop easing as soon as the pointer stops. Your app owns frame scheduling and reduced-motion preferences; keep the surface static when motion is disabled.
 
 This crate currently supplies inset lighting and direction helpers. Image-overlay rims and image-tone sampling remain web-only.
+
+## Native SwiftUI
+
+The `Specular` Swift package brings the same lit and dim layers to SwiftUI, turning to follow the pointer. It draws with SwiftUI only: no web view, no global event monitor. Requires macOS 14, iOS 17 or visionOS 1, and Swift 6.
+
+### 1. Add the Swift package
+
+In Xcode, choose **File › Add Package Dependencies…**, paste `https://github.com/emmanuel-defreitas/specular.git`, and add the `Specular` library to your app target. In a `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/emmanuel-defreitas/specular.git", from: "0.4.0"),
+],
+targets: [
+    .target(name: "App", dependencies: [.product(name: "Specular", package: "specular")]),
+]
+```
+
+The manifest sits at the repository root and shares its version tags with the npm package.
+
+### 2. Light a shape
+
+`.specular` is a `Shape` modifier. It fills the shape and lights its edge:
+
+```swift
+import Specular
+import SwiftUI
+
+RoundedRectangle(cornerRadius: 32)
+    .specular(fill: Color(white: 0.25))
+    .frame(width: 160, height: 160)
+```
+
+Without a surface, the light follows the color scheme: `.dark` in dark mode, `.light` otherwise. Pass one to choose: `.specular(.dark, fill: …)`. For any other view, borrow a shape the way `.background(_:in:)` does:
+
+```swift
+Label("Inbox", systemImage: "tray")
+    .padding()
+    .background(.quaternary, in: .capsule)
+    .specular(in: .capsule)
+```
+
+### 3. Make the light follow the mouse
+
+Every surface follows the pointer while the pointer is over it. To track the pointer anywhere in the window, add `.specularPointer()` to a container that fills the window. That's one hover handler for every surface inside, like the web package's single window listener. Each surface measures its own center, so surfaces anywhere in the layout work, including in scroll views:
+
+```swift
+struct ContentView: View {
+    var body: some View {
+        HStack(spacing: 32) {
+            ForEach(0..<4) { _ in
+                Circle().specular(fill: .gray).frame(width: 64, height: 64)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .specularPointer()
+    }
+}
+```
+
+| `light:` | Behavior |
+| --- | --- |
+| `.pointer` (default) | Follows immediately, like the web and GPUI defaults. |
+| `.pointer(animation: .specular)` | Eases each change with the web rim's 350 ms curve. |
+| `.fixed(.degrees(90))` | A static light, clockwise from 12 o'clock. |
+
+The light always takes the short way around, and stays lit from the top when Reduce Motion is on. On devices without a hovering pointer, `.specularPointer(touches: true)` also follows drags. Layer opacity is **0–1**, as in GPUI. Unlike CSS and GPUI inset shadows, the layers paint as an overlay above the view's content. To try the demo from this repository:
+
+```bash
+swift run SpecularDemo
+```
+
+See the [Swift package guide](swift/README.md) for custom layers and the direction helpers.
 
 ## Install
 
@@ -418,6 +497,7 @@ The React entry point also exports `PointerLightOptions`, `RimProps`, `ToneAlpha
 ```bash
 make ci
 make example-dev
+make swift-test   # macOS
 ```
 
 The [example site](examples/vite-react) is the complete visual reference.

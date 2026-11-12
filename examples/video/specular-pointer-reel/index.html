@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: Garamond; src: url("assets/fonts/EBGaramond-400.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: Garamond; src: url("assets/fonts/EBGaramond-700.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: Inter; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: Inter; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: JetBrains; src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2"); font-weight: 400; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #f5f5f4; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #f5f5f4; color: #1c1917; -webkit-font-smoothing: antialiased; }
+      .scene { position: absolute; inset: 0; overflow: hidden; }
+      .cream { background: #f5f5f4; }
+      .dark { background: #1c1917; color: #f5f5f4; }
+      .kicker { position: absolute; left: 84px; top: 114px; font: 400 27px JetBrains, monospace; letter-spacing: .03em; }
+      .kicker span { color: #008b62; }
+      .rule { position: absolute; left: 84px; right: 84px; top: 175px; height: 1px; background: rgba(28,25,23,.16); }
+      .dark .rule { background: rgba(245,245,244,.22); }
+      .number { position: absolute; right: 84px; top: 114px; font: 400 27px JetBrains, monospace; opacity: .55; }
+      .headline { position: absolute; left: 84px; right: 84px; margin: 0; font: 400 132px/.93 Garamond, Georgia, serif; letter-spacing: -.035em; }
+      .headline em { font-weight: 400; }
+      #hero-head { top: 278px; }
+      .underline { position: relative; white-space: nowrap; }
+      .underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.04em; height: 7px; background: #00bc7d; border-radius: 99px; transform-origin: left; }
+      .hero-quiet { position: absolute; left: 84px; top: 1638px; font: 400 36px/1.35 Inter, sans-serif; color: #57534e; }
+      .hero-foot { position: absolute; left: 84px; bottom: 95px; font: 400 25px JetBrains, monospace; color: #78716c; }
+      .disc { position: absolute; border-radius: 50%; background: #e7e5e4; }
+      #hero-disc { left: 240px; top: 805px; width: 600px; height: 600px; --hx: 13px; --hy: 13px; --dx: -11px; --dy: -11px; box-shadow: 0 22px 50px rgba(28,25,23,.07), inset var(--hx) var(--hy) 25px rgba(255,255,255,.9), inset var(--dx) var(--dy) 29px rgba(28,25,23,.2); }
+      .cursor { position: absolute; width: 56px; height: 56px; border: 3px solid #008b62; border-radius: 50%; display: grid; place-items: center; z-index: 5; }
+      .cursor::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: #008b62; }
+      #hero-cursor { left: 170px; top: 760px; }
+      #layers-head { top: 272px; font-size: 124px; }
+      .layers-sub { position: absolute; left: 84px; top: 565px; font: 400 34px/1.38 Inter, sans-serif; color: #57534e; }
+      #sample { position: absolute; left: 210px; top: 760px; width: 660px; height: 660px; border-radius: 144px; background: #e7e5e4; }
+      #lit-layer, #dim-layer { position: absolute; inset: 0; border-radius: inherit; }
+      #lit-layer { --lx: 12px; --ly: 12px; box-shadow: inset var(--lx) var(--ly) 23px rgba(255,255,255,.95); }
+      #dim-layer { --dx: -12px; --dy: -12px; box-shadow: inset var(--dx) var(--dy) 29px rgba(28,25,23,.22); }
+      #layer-cursor { left: 152px; top: 735px; }
+      .legend { position: absolute; bottom: 105px; width: 430px; height: 235px; border-top: 1px solid rgba(28,25,23,.22); padding-top: 32px; }
+      #lit-legend { left: 84px; }
+      #dim-legend { right: 84px; }
+      .legend .dot { width: 18px; height: 18px; display: inline-block; margin-right: 13px; border-radius: 50%; }
+      #lit-legend .dot { background: #00bc7d; }
+      #dim-legend .dot { background: #57534e; }
+      .legend strong { font: 700 29px Inter, sans-serif; }
+      .legend p { margin: 22px 0 0; font: 400 30px/1.25 Inter, sans-serif; color: #57534e; }
+      .cta-wordmark { position: absolute; left: 84px; right: 84px; top: 490px; text-align: center; font: 400 150px Garamond, Georgia, serif; letter-spacing: -.04em; }
+      .cta-mark { position: absolute; left: 499px; top: 360px; width: 82px; height: 82px; border: 4px solid #00bc7d; border-radius: 50%; box-shadow: inset 0 0 0 12px #1c1917, inset 0 0 0 17px #00bc7d; }
+      .cta-line { position: absolute; left: 84px; right: 84px; top: 735px; text-align: center; font: 400 43px/1.35 Inter, sans-serif; color: #d6d3d1; }
+      .cta-command { position: absolute; left: 92px; right: 92px; top: 1005px; height: 112px; border: 1px solid #44403c; border-radius: 22px; background: #292524; display: flex; align-items: center; justify-content: center; gap: 20px; font: 400 37px JetBrains, monospace; }
+      #cargo-command { top: 1140px; }
+      .cta-command .prompt { color: #a8a29e; }
+      .cta-command .package { color: #00bc7d; }
+      .cta-meta { position: absolute; left: 0; right: 0; top: 1315px; text-align: center; font: 400 25px JetBrains, monospace; color: #a8a29e; }
+      .cta-bottom { position: absolute; left: 84px; right: 84px; bottom: 93px; display: flex; justify-content: space-between; font: 400 25px JetBrains, monospace; color: #a8a29e; }
+      .cta-bottom span:last-child { color: #00bc7d; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-duration="15.5" data-width="1080" data-height="1920">
+      <section id="hero" class="scene cream">
+        <div class="kicker"><span>✳</span> @exegia/specular</div><div class="number">01 / 02</div><div class="rule"></div>
+        <h1 id="hero-head" class="headline">Light that<br /><em class="underline">follows you.</em></h1>
+        <div id="hero-disc" class="disc"></div><div id="hero-cursor" class="cursor"></div>
+        <div class="hero-quiet">Move the pointer.<br />The light responds.</div>
+        <div class="hero-foot">Tailwind v4 · React · GPUI</div>
+      </section>
+      <section id="layers" class="scene cream">
+        <div class="kicker"><span>✳</span> @exegia/specular</div><div class="number">02 / 02</div><div class="rule"></div>
+        <h2 id="layers-head" class="headline">The polish is<br /><em>in the edges.</em></h2>
+        <div class="layers-sub">Two inset layers, tuned together.</div>
+        <div id="sample"><div id="lit-layer"></div><div id="dim-layer"></div></div>
+        <div id="layer-cursor" class="cursor"></div>
+        <div id="lit-legend" class="legend"><span class="dot"></span><strong>Lit · highlight</strong><p>Catches the near edge.</p></div>
+        <div id="dim-legend" class="legend"><span class="dot"></span><strong>Dim · shade</strong><p>Shapes the far edge.</p></div>
+      </section>
+      <section id="cta" class="scene dark">
+        <div class="kicker"><span>✳</span> INTERFACES WITH DEPTH</div><div class="rule"></div>
+        <div class="cta-mark"></div><div class="cta-wordmark">specular</div>
+        <div class="cta-line">Light that moves with you.</div>
+        <div class="cta-command"><span class="prompt">$ bun add</span><span class="package">@exegia/specular</span></div>
+        <div id="cargo-command" class="cta-command"><span class="prompt">$ cargo add</span><span class="package">gpui-specular</span></div>
+        <div class="cta-meta">Tailwind v4 · React · GPUI · MIT</div>
+        <div class="cta-bottom"><span>BUILD WITH LIGHT</span><span>↗</span></div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      gsap.set("#layers, #cta", { opacity: 0 });
+      gsap.set("#hero-head, .hero-quiet, .hero-foot, #hero-disc, #hero-cursor", { opacity: 0 });
+      gsap.set("#hero-head", { y: 45 });
+      gsap.set("#hero-disc", { scale: .86 });
+      gsap.set("#lit-layer, #dim-layer, #layer-cursor", { opacity: 0 });
+      gsap.set("#layers-head, .layers-sub, .legend", { opacity: 0, y: 35 });
+      gsap.set("#cta .cta-mark, #cta .cta-wordmark, #cta .cta-line, #cta .cta-command, #cta .cta-meta", { opacity: 0, y: 30 });
+      const tl = gsap.timeline({ paused: true });
+      tl.to("#hero-head", { opacity: 1, y: 0, duration: .85, ease: "power3.out" }, .15);
+      tl.to("#hero-disc", { opacity: 1, scale: 1, duration: .9, ease: "power3.out" }, .45);
+      tl.to("#hero-cursor", { opacity: 1, duration: .4 }, 1.4);
+      tl.to("#hero-cursor", { x: 720, y: 250, duration: 1.55, ease: "power2.inOut" }, 1.65);
+      tl.to("#hero-disc", { "--hx": "-13px", "--hy": "13px", "--dx": "11px", "--dy": "-11px", duration: 1.55, ease: "power2.inOut" }, 1.65);
+      tl.to("#hero-cursor", { x: 270, y: 640, duration: 1.35, ease: "power2.inOut" }, 3.35);
+      tl.to("#hero-disc", { "--hx": "13px", "--hy": "-13px", "--dx": "-11px", "--dy": "11px", duration: 1.35, ease: "power2.inOut" }, 3.35);
+      tl.to(".hero-quiet, .hero-foot", { opacity: 1, duration: .55 }, 2.7);
+      tl.to("#hero", { opacity: 0, duration: .6, ease: "power2.inOut" }, 4.85);
+      tl.to("#layers", { opacity: 1, duration: .6, ease: "power2.inOut" }, 4.85);
+      tl.to("#layers-head, .layers-sub", { opacity: 1, y: 0, duration: .75, stagger: .12, ease: "power3.out" }, 5.3);
+      tl.to("#lit-layer", { opacity: 1, duration: .8 }, 6.15);
+      tl.to("#lit-legend", { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, 6.35);
+      tl.to("#dim-layer", { opacity: 1, duration: .8 }, 7.35);
+      tl.to("#dim-legend", { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, 7.55);
+      tl.to("#layer-cursor", { opacity: 1, duration: .4 }, 8.35);
+      tl.to("#layer-cursor", { x: 755, y: 180, duration: 1.1, ease: "power2.inOut" }, 8.55);
+      tl.to("#lit-layer", { "--lx": "-12px", "--ly": "12px", duration: 1.1 }, 8.55);
+      tl.to("#dim-layer", { "--dx": "12px", "--dy": "-12px", duration: 1.1 }, 8.55);
+      tl.to("#layer-cursor", { x: 755, y: 700, duration: 1.1, ease: "power2.inOut" }, 9.95);
+      tl.to("#lit-layer", { "--lx": "-12px", "--ly": "-12px", duration: 1.1 }, 9.95);
+      tl.to("#dim-layer", { "--dx": "12px", "--dy": "12px", duration: 1.1 }, 9.95);
+      tl.to("#layers", { opacity: 0, duration: .6, ease: "power2.inOut" }, 11.55);
+      tl.to("#cta", { opacity: 1, duration: .6, ease: "power2.inOut" }, 11.55);
+      tl.to("#cta .cta-mark, #cta .cta-wordmark, #cta .cta-line, #cta .cta-command, #cta .cta-meta", { opacity: 1, y: 0, duration: .72, stagger: .12, ease: "power3.out" }, 12.05);
+      tl.to({}, { duration: 15.5 }, 0);
+      window.__timelines.main = tl;
+    </script>
+  </body>
+</html>
