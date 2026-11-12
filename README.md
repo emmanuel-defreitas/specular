@@ -14,6 +14,12 @@ Pointer-following rim highlights and inset bezel utilities for Tailwind v4 + Rea
 
 <sub>Six discs, one window listener. Explore the interactive presentation on the <a href="https://emmanuel-defreitas.github.io/specular/">example site</a>.</sub>
 
+<a href="examples/video/specular-pointer-reel/renders/specular-pointer-reel.mp4">
+  <img src="examples/video/specular-pointer-reel/snapshots/frame-01-at-4.3s.png" alt="Light that follows you: a disc's inset light turning toward the pointer" width="240">
+</a>
+
+<sub>▶ <a href="examples/video/specular-pointer-reel/renders/specular-pointer-reel.mp4">Watch the 15-second reel</a>, a vertical cut made with <a href="https://github.com/heygen-com/hyperframes">HyperFrames</a>. Its source is in <a href="examples/video/specular-pointer-reel">examples/video</a>.</sub>
+
 </div>
 
 ---
