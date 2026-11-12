@@ -26,23 +26,36 @@ import Testing
     }
 
     func luma(at point: CGPoint) throws -> Double {
-        for _ in 0..<5 { RunLoop.main.run(until: .now + 0.02) }
         let rep = try #require(host.bitmapImageRepForCachingDisplay(in: host.bounds))
         host.cacheDisplay(in: host.bounds, to: rep)
         let color = try #require(rep.colorAt(x: Int(point.x) * rep.pixelsWide / 100, y: Int(point.y) * rep.pixelsHigh / 100))
         return Double(try #require(color.usingColorSpace(.sRGB)).redComponent)
     }
 
+    /// Whether `lit` reads brighter than `shaded`, pumping the run loop until
+    /// it does or two seconds pass. Updates land a few turns after the
+    /// pointer moves, later still on a slow CI runner.
+    func settles(lit: CGPoint, shaded: CGPoint) throws -> Bool {
+        let deadline = Date.now + 2
+        repeat {
+            RunLoop.main.run(until: .now + 0.02)
+            if try luma(at: lit) > luma(at: shaded) + 0.2 { return true }
+        } while Date.now < deadline
+        return false
+    }
+
     @Test func lightFollowsTheSharedPointer() throws {
         // The probe is 40 × 40, centered in 100 × 100: edges at 30 and 70.
-        pointer.location = CGPoint(x: 50, y: -500)
-        #expect(try luma(at: CGPoint(x: 50, y: 31)) > luma(at: CGPoint(x: 50, y: 69)) + 0.2)
+        let (top, right, bottom, left) = (CGPoint(x: 50, y: 31), CGPoint(x: 69, y: 50), CGPoint(x: 50, y: 69), CGPoint(x: 31, y: 50))
 
         pointer.location = CGPoint(x: 500, y: 50)
-        #expect(try luma(at: CGPoint(x: 69, y: 50)) > luma(at: CGPoint(x: 31, y: 50)) + 0.2)
+        #expect(try settles(lit: right, shaded: left))
 
         pointer.location = CGPoint(x: 50, y: 500)
-        #expect(try luma(at: CGPoint(x: 50, y: 69)) > luma(at: CGPoint(x: 50, y: 31)) + 0.2)
+        #expect(try settles(lit: bottom, shaded: top))
+
+        pointer.location = CGPoint(x: -500, y: 50)
+        #expect(try settles(lit: left, shaded: right))
     }
 }
 #endif
