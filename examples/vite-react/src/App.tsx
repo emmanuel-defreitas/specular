@@ -71,7 +71,7 @@ export function App() {
   return (
     <>
       <header className="sticky top-0 z-10 border-b border-stone-300/60 bg-stone-100/80 backdrop-blur dark:border-neutral-700 dark:bg-neutral-900/80">
-        <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-3">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
           <a href="#top" className="flex items-center gap-2.5 font-semibold text-stone-900 dark:text-white">
             <img src={logo} className="size-6" alt="" />
             specular
@@ -82,7 +82,7 @@ export function App() {
                 key={id}
                 href={`#${id}`}
                 aria-current={active === id ? "page" : undefined}
-                className={`rounded-md px-2.5 py-1 transition-[background-color,color,box-shadow] duration-150 hover:bg-stone-200 hover:text-stone-900 dark:hover:bg-neutral-800 dark:hover:text-white ${active === id ? "bg-stone-200 text-stone-900 bezel-base dark:bg-neutral-800 dark:text-white" : ""}`}
+                className={`rounded-md px-2 py-1 whitespace-nowrap transition-[background-color,color,box-shadow] duration-150 hover:bg-stone-200 hover:text-stone-900 dark:hover:bg-neutral-800 dark:hover:text-white ${active === id ? "bg-stone-200 text-stone-900 bezel-base dark:bg-neutral-800 dark:text-white" : ""}`}
               >
                 {label}
               </a>
@@ -94,7 +94,7 @@ export function App() {
             }}>
               <a
                 href="https://github.com/emmanuel-defreitas"
-                className="flex items-center gap-2 rounded-full bg-stone-200 py-1 pr-3 pl-1 text-sm font-medium text-stone-700 bezel-base transition-[box-shadow,transform,color] duration-150 hover:-translate-y-px hover:text-stone-950 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:text-white"
+                className="flex shrink-0 items-center gap-2 rounded-full bg-stone-200 py-1 pr-3 pl-1 text-sm font-medium whitespace-nowrap text-stone-700 bezel-base transition-[box-shadow,transform,color] duration-150 hover:-translate-y-px hover:text-stone-950 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:text-white"
               >
                 <img className="size-6 rounded-full" src="https://github.com/emmanuel-defreitas.png?size=48" alt="" />
                 @emmanuel-defreitas
