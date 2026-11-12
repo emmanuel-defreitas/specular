@@ -165,6 +165,32 @@ export default createPlugin(surfaces)
 <div class="card-base hover:card-lit-t-2
             transition-[box-shadow,transform] duration-300" />`
 
+const SWIFTUI = `// 1. Xcode › File › Add Package Dependencies…
+//    https://github.com/emmanuel-defreitas/specular.git  →  Specular
+
+// 2. light a shape — .light / .dark follows the color scheme
+import Specular
+import SwiftUI
+
+RoundedRectangle(cornerRadius: 32)
+    .specular(fill: Color(white: 0.25))
+    .frame(width: 160, height: 160)
+
+// any other view: borrow a shape, like .background(_:in:)
+Label("Inbox", systemImage: "tray")
+    .padding()
+    .background(.quaternary, in: .capsule)
+    .specular(in: .capsule)
+
+// 3. one hover handler for the window — the light follows everywhere
+ContentView()
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .specularPointer()
+
+// pin or ease it
+Circle().specular(fill: .indigo, light: .fixed(.degrees(90)))
+Circle().specular(fill: .indigo, light: .pointer(animation: .specular))`
+
 const ROWS = [
   { hue: 80, initials: "AL", title: "Ada Lovelace", preview: "The analytical engine notes are ready for review.", time: "09:41" },
   { hue: 200, initials: "BK", title: "Bruno Kessler", preview: "Shipped the walker patch — TF031 is silent now.", time: "08:17" },
@@ -223,6 +249,21 @@ export function App() {
       <section className="grid gap-4">
         <h2 className="text-xl font-semibold text-stone-900 dark:text-white">How to apply it</h2>
         <Snippet>{APPLY}</Snippet>
+      </section>
+
+      <section className="grid gap-4">
+        <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <h2 className="text-xl font-semibold text-stone-900 dark:text-white">Native SwiftUI</h2>
+          <code className="w-fit rounded-full bg-stone-200 px-3 py-1 font-mono text-[11px] text-stone-600 bezel-base dark:bg-neutral-800 dark:text-neutral-400">
+            Swift Package Manager · macOS 14 · iOS 17 · visionOS 1
+          </code>
+        </div>
+        <p className="max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-neutral-400">
+          The same lit and dim layers as a <code className="font-mono">Shape</code> modifier, drawn with SwiftUI alone.
+          Each surface measures its own center; <code className="font-mono">.specularPointer()</code> on a container is
+          the native window listener. Try it with <code className="font-mono">swift run SpecularDemo</code>.
+        </p>
+        <Snippet>{SWIFTUI}</Snippet>
       </section>
 
       <section className="grid gap-6">
