@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import { test } from "node:test"
-import { boxShadow, cssCode, defaults, effectiveSurface, gpuiCode, tailwindCode, pointedSurface, randomSurface } from "../src/lib/generator.ts"
+import { boxShadow, cssCode, defaults, effectiveSurface, gpuiCode, swiftuiCode, tailwindCode, pointedSurface, randomSurface } from "../src/lib/generator.ts"
 
 test("dark cap leaves the original light settings intact", () => {
   const light = defaults(false)
@@ -10,6 +10,7 @@ test("dark cap leaves the original light settings intact", () => {
   assert.match(cssCode(dark), /255 255 255 \/ 20%/)
   assert.match(tailwindCode(dark), /alpha: 20/)
   assert.match(gpuiCode(dark), /alpha\(0.2\)/)
+  assert.match(swiftuiCode(dark), /opacity: 0.2,/)
 })
 test("exports preserve signed geometry, custom colors and layer order", () => {
   const surface = defaults(true)
@@ -23,6 +24,11 @@ test("exports preserve signed geometry, custom colors and layer order", () => {
   assert.match(rust, /px\(-4.0\), px\(8.0\)/)
   assert.match(rust, /spread_radius\(px\(-3.0\)\)/)
   assert.match(rust, /alpha\(0.17\)/)
+  const swift = swiftuiCode(surface)
+  assert.ok(swift.indexOf("lit:") < swift.indexOf("dim:"))
+  assert.match(swift, /Color\(red: 0.071, green: 0.671, blue: 0.937\), opacity: 0.17,\s+x: -4, y: 8, blur: 0, spread: -3/)
+  assert.match(swift, /RoundedRectangle\(cornerRadius: 32\)/)
+  assert.match(swift, /\.frame\(width: 160, height: 160\)/)
 })
 
 test("random materials stay restrained in both themes", () => {

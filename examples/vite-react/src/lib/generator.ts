@@ -26,6 +26,14 @@ export function gpuiCode(surface: Surface) {
   const layer = (value: Layer) => `            BoxShadow::new(px(${num(value.x)}), px(${num(value.y)}),\n                rgb(0x${value.color.slice(1)}).alpha(${num(value.alpha / 100)}).into())\n                .blur_radius(px(${num(value.blur)}))\n                .spread_radius(px(${num(value.spread)}))\n                .inset()`
   return `use gpui::{div, px, rgb, BoxShadow, Div, Styled};\n\npub fn specular_surface() -> Div {\n    div()\n        .w(px(${num(surface.size)}))\n        .h(px(${num(surface.size)}))\n        .rounded(px(${num(surface.radius)}))\n        .bg(rgb(0x${surface.fill.slice(1)}))\n        .shadow(vec![\n            // GPUI paints the last layer on top: dim, then lit.\n${layer(surface.dim)},\n${layer(surface.lit)},\n        ])\n}`
 }
+export function swiftuiCode(surface: Surface) {
+  const color = (hex: string) => {
+    const [r, g, b] = [1, 3, 5].map((offset) => Math.round(parseInt(hex.slice(offset, offset + 2), 16) / 255 * 1000) / 1000)
+    return `Color(red: ${r}, green: ${g}, blue: ${b})`
+  }
+  const layer = (value: Layer) => `.init(${color(value.color)}, opacity: ${value.alpha / 100},\n               x: ${value.x}, y: ${value.y}, blur: ${value.blur}, spread: ${value.spread})`
+  return `import Specular\nimport SwiftUI\n\nlet surface = SpecularSurface(\n    lit: ${layer(surface.lit)},\n    dim: ${layer(surface.dim)}\n)\n\nstruct SpecularTile: View {\n    var body: some View {\n        RoundedRectangle(cornerRadius: ${surface.radius})\n            .specular(\n                surface,\n                fill: ${color(surface.fill)},\n                light: .fixed(.zero) // drop to follow the pointer\n            )\n            .frame(width: ${surface.size}, height: ${surface.size})\n    }\n}`
+}
 
 /** Coordinated, low-contrast materials with narrow inset edges. */
 export function randomSurface(dark: boolean, random = Math.random): Surface {
